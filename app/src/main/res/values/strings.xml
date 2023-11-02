@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Prueba Trepf</string>
+
+    <string name="string_app_restrictions_title">Estatus</string>
+    <string name="string_app_restrictions_description">Estatus</string>
+
+</resources>
