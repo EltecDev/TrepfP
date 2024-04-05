@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "626136429004",
+    "project_id": "oxxomonitor",
+    "storage_bucket": "oxxomonitor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626136429004:android:6fd029018d1b1950b32d69",
+        "android_client_info": {
+          "package_name": "mx.eltec.oxxomonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "626136429004-3gpun2ionlbtctir23mdp707i3coal0c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAYOxfX2d4vkyaUkKA2pCauwSNPvK2m3E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "626136429004-3gpun2ionlbtctir23mdp707i3coal0c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
