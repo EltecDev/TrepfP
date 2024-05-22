@@ -1,17 +1,13 @@
 package com.example.trepfp
 
 
-//import ConexionTrepfPrueba.ConexionTrefp
-
-
-//import mx.eltec.ConexionTrefp
-
 import RecyclerResultAdapter
 import RecyclerResultItem
 import Utility.BLEDevices
 import Utility.GetHexFromRealDataCEOWF.getDecimal
 import Utility.GetHexFromRealDataImbera
 import Utility.GetRealDataFromHexaImbera
+import Utility.GetRealDataFromHexaOxxoDisplay
 import Utility.MakeProgressBar
 import android.Manifest
 import android.R
@@ -21,6 +17,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.RestrictionsManager
 import android.content.SharedPreferences
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
@@ -31,9 +28,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -44,11 +45,15 @@ import com.example.trepfp.databinding.ActivityMainBinding
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import mx.eltec.ConexionTrefp
-
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import mx.eltec.BluetoothServices.BluetoothLeService
+import mx.eltec.Utility.CustomProgressDialog
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -58,6 +63,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -65,7 +71,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-
+//import com.example123.trepfp.ConexionTrefp
 class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
     private lateinit var binding: ActivityMainBinding
@@ -81,6 +87,8 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
     private val progressDialog2 by lazy { this@MainActivity?.let { MakeProgressBar(it) } }
     val workbook = XSSFWorkbook()
     private lateinit var mHandler: Handler
+    private val customProgressDialog by lazy { this@MainActivity?.let { CustomProgressDialog(this) } }
+    val scope = CoroutineScope(Dispatchers.Main)
 
     data class Datos(
         val timestamp: String,
@@ -92,7 +100,6 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
         val checksum: String*/
 
     )
-
 
 
     private lateinit var saveFileLauncher: ActivityResultLauncher<String>
@@ -109,7 +116,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
     private lateinit var recyclerResultAdapter: RecyclerResultAdapter
     private lateinit var recyclerResultList: ArrayList<RecyclerResultItem>
-
+    var bluetoothLeService  : BluetoothLeService? = null // by lazy { conexionTrefp2.bluetoothLeService }
     class RangeCheckListener : ConexionTrefp.OnRangeCheckListener {
         override fun onRangeChecked(isWithinRange: Boolean): Boolean {
             if (isWithinRange) {
@@ -122,7 +129,15 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
             return isWithinRange
         }
     }
-
+    private fun getVersionName(): String {
+        try {
+            val pInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
+            return pInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return ""
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //  setContentView(R.layout.activity_main)
@@ -145,6 +160,11 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
         binding.rvbleDevices.layoutManager = LinearLayoutManager(this)
         binding.rvbleDevices.adapter = recyclerViewBLEList
 
+
+        binding.TextAltitud.setText("ELTEC_apps")
+        binding.Textlatitud.setText("975318642a")
+
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         mHandler = Handler()
         // Establece el adaptador y carga los datos en el Spinner
@@ -153,12 +173,16 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
         binding.spinnerMAC.selectedItem.toString()
         //conexionTrefp(applicationContext)
 
+        bluetoothLeService  =   conexionTrefp2.bluetoothLeService
+                //   bluetoothServices = BluetoothServices(this)
 
-        //   bluetoothServices = BluetoothServices(this)
-
+        binding.textViewVersion.text = "Version de prueba: ${BuildConfig.VERSION_NAME}"
         binding.Buscar.setOnClickListener {
+            customProgressDialog!!.show()
             scanLeDevice(true)
+            customProgressDialog!!.updateText("Escaneando")
             mHandler.postDelayed({
+                customProgressDialog!!.dismiss()
                 scanLeDevice(false)
             }, SCAN_PERIOD)
 
@@ -166,83 +190,86 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 val position = binding.rvbleDevices.getChildAdapterPosition(v)
                 val device = listaDevices[position]
 
-                    Log.d("ConexionBLE"," onSuccess ${device.mac} ${device.nombre} ")
-                    conexionTrefp2.ConexionBLE(device.mac,
-                        device.nombre,//"00:E4:4C:20:A2:23", //"00:E4:4C:21:7A:F3",//"00:E4:4C:21:7A:F3","",//"",
-                        //   "IMBERA_RUTA_FRIA",
-                        ///"00:E4:4C:00:92:E4",//"00:E4:4C:21:7A:F3","00:E4:4C:21:76:9C",//"00:E4:4C:21:76:9C",////"3C:A5:51:94:BF:A5",//"00:E4:4C:20:A5:7D",/*"00:E4:4C:21:76:9C",*///"00:E4:4C:21:27:BC", //
-                        object : ConexionTrefp.MyCallback {
-                            override fun onSuccess(result: Boolean): Boolean {
+                //  Log.d("PruebaFuncionConexion"," onSuccess ${device.mac} ${device.nombre} ")
 
-                                Log.d("ConexionBLE","onSuccess ${result.toString()}")
-                                return result
-                            }
+                scope.launch {
+                    var contador = 1
+                    while (contador <= 1) {
 
-                            override fun onError(error: String) {
-                                // manejar error
-                                runOnUiThread {
-                                    binding.T.text = error
-                                }
-                                Log.d("ConexionBLE", error.toString())
-                            }
 
-                            override fun getInfo(data: MutableList<String>?) {
-                                Log.d("ConexionBLE", "getInfo ${data.toString()}")
-                            }
+                 //       conexionTrefp2.bluetoothLeService!!.connect(device.mac)
+                        conexionTrefp2.MyAsyncTaskConnectBLE(device.mac,
+                            device.nombre,
+                            object : ConexionTrefp.MyCallback {
+                                override fun onSuccess(result: Boolean): Boolean {
 
-                            override fun onProgress(progress: String): String {
-                                when (progress) {
-                                    "Iniciando" -> {
-                                        //    progressDialog2?.second(progress+ " la conexion")
-                                        //progressDialog2?.secondStop()
-                                        runOnUiThread {
-                                            binding.TextResultado.text = progress
-                                        }
-                                        //   progressDialog2?.secondStop()
+                                    runOnUiThread {
+                                        customProgressDialog!!.dismiss()
+                                        Log.d("ConexionCLASBLE", "onSuccess intento $contador resultado ${result.toString()} ")
+                                        if (result) binding.T.text = "${sp!!.getString("mac", "")}"
+                                        Thread.sleep(500)
+                                   //     conexionTrefp2.desconectar()
                                     }
-
-                                    "Realizando" -> {
-                                        runOnUiThread {
-                                            binding.TextResultado.text = progress
-                                        }
-                                        // progressDialog2?.second(progress+ " la conexion")
-                                    }
-
-                                    "Finalizado" -> {
-                                        runOnUiThread {
-                                            binding.TextResultado.text = progress
-                                            //  progressDialog2?.secondStop()
-                                            //    progressDialog2?.second(progress+ " la conexion")
-
-
-                                            var Vhandler = Handler()
-
-                                            mHandler.postDelayed({
-
-                                                binding.textView.text =
-                                                    "Resultado ${
-                                                        sp?.getBoolean(
-                                                            "isconnected",
-                                                            false
-                                                        )
-                                                    }"
-                                                sp?.getString("mac", "").let {
-                                                    binding.T.text = " conectado a \n $it "
-                                                }
-                                                progressDialog2?.secondStop()
-                                            }, HandlerTIME)
-                                        }
-                                    }
+                                    return result
                                 }
 
+                                override fun onError(error: String) {
+                                    // manejar error
+                                    runOnUiThread {
+                                        binding.TextResultado.text = error
+                                    }
+                                    Log.d("ConexionCLASBLE", error.toString())
+                                }
 
+                                override fun getInfo(data: MutableList<String>?) {
+                                    Log.d("ConexionCLASBLE", "getInfo ${data.toString()}")
+                                }
 
-                                Log.d("ConexionBLE", "progress ${progress}")
-                                return progress
-                            }
-                        })
+                                override fun onProgress(progress: String): String {
 
-              //  task.execute()
+                                    when (progress) {
+                                        "Iniciando" -> {
+
+                                            runOnUiThread {
+                                                customProgressDialog!!.updateText("Conectando")
+                                                binding.TextResultado.text = progress
+                                            }
+                                        }
+
+                                        "Realizando" -> {
+                                            runOnUiThread {
+                                                binding.TextResultado.text = progress
+                                            }
+                                        }
+
+                                        "Finalizando" -> {
+                                            runOnUiThread {
+                                                binding.TextResultado.text = progress
+                                                customProgressDialog!!.dismiss()
+                                            }
+                                        }
+                                    }
+                                    Log.d("ConexionCLASBLE", "progress ${progress}")
+                                    return progress
+                                }
+                            }).execute()
+                        delay(60000)
+                        contador++
+                    }
+                }
+//                ConexionTrefp.MyCallback{}
+//                try {
+//                    Handler(Looper.getMainLooper()).post {
+//                        Log.i("PruebaFuncionConexion", "Connection parameters: mac- ${device.mac} name- ${device.nombre}")
+//                        conexionTrefp2.MyAsyncTaskConnectBLE(device.mac, device.nombre, this).execute()
+//
+//                    }
+//                } catch (ex: Exception) {
+////                    Log.wtf(TAG, "Error while trying to connect: ${ex.message ?: ""}")
+////                    resultType = Constants.SCAN_ERROR
+////                    state = STATE_FINISHED
+//                }
+
                 //    Toast.makeText(this@MainActivity, "Dispositivo seleccionado: ${device.nombre}", Toast.LENGTH_SHORT).show()
             }
             // exportarDatosAExcelPRUEBA()
@@ -513,350 +540,242 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
               }
       */
-
+        Log.d(
+            "salidaCaract",
+            "characteristicToHexString ${characteristicToHexString("[B@d429884")}"
+        )
 
         binding.TIME.setOnClickListener {
             //   binding.TextResultado.text = data.toString()
-            val recyclerResultAdapter2 = binding.ReciclerResult.adapter as RecyclerResultAdapter
-            recyclerResultList.clear() // Si recyclerResultList es mutable, puedes usar clear() directamente
-            recyclerResultList.clear()
-            recyclerResultAdapter2.notifyDataSetChanged()
-            //conexionTrefp2.getTime()
-            if (conexionTrefp2.getStatusConnectBle()) {
+            /*  val recyclerResultAdapter2 = binding.ReciclerResult.adapter as RecyclerResultAdapter
+              recyclerResultList.clear() // Si recyclerResultList es mutable, puedes usar clear() directamente
+              recyclerResultList.clear()
+              recyclerResultAdapter2.notifyDataSetChanged()
+              //conexionTrefp2.getTime()
+              if (conexionTrefp2.getStatusConnectBle()) {
 
 
-                //   conexionTrefp2.getTime()
+                  //   conexionTrefp2.getTime()
 
-                conexionTrefp2.MyAsyncTaskGeTIMEVALIDACION(object : ConexionTrefp.MyCallback {
+                  conexionTrefp2.MyAsyncTaskGeTIMEVALIDACION(object : ConexionTrefp.MyCallback {
 
-                    override fun onSuccess(result: Boolean): Boolean {
-                        Log.d("MyAsyncTaskGeTIME", "resultado ${result}")
-                        //     binding.TextResultado.text = result.toString()
-                        return result
-                    }
+                      override fun onSuccess(result: Boolean): Boolean {
+                          Log.d("MyAsyncTaskGeTIME", "resultado ${result}")
+                          //     binding.TextResultado.text = result.toString()
+                          return result
+                      }
 
-                    override fun onError(error: String) {
-                        binding.TextResultado.text = error
-                        Log.d("MyAsyncTaskGeTIME", "error ${error}")
-                    }
+                      override fun onError(error: String) {
+                          binding.TextResultado.text = error
+                          Log.d("MyAsyncTaskGeTIME", "error ${error}")
+                      }
 
-                    override fun getInfo(data: MutableList<String>?) {
-                        /*      Log.d(
-                                  "CONTEOFINAL",
-                                  "data ${data!!.size}"
-                              )
-                              binding.TextResultado.text = data.toString()
-                           //   data?.map {
-                              for ((index, registro) in data!!.reversed()!!.withIndex()) {
-                                  val hexString =
-                                      registro.substring(0, 8) // valor hexadecimal que se desea convertir
-
-                                  Log.d("datosResultTIMESSSSSSSSSSSSSSSSS", "$registro $index  ${convertirHexAFecha(hexString)} ")
-                              }
-      */
-
-                        data?.reversed()?.map {
-                            val hexString =
-                                it.substring(0, 8) // valor hexadecimal que se desea convertir
-
-                            recyclerResultList.add(
-                                RecyclerResultItem(
-                                    it,
-                                    convertirHexAFecha(hexString)
+                      override fun getInfo(data: MutableList<String>?) {
+                          /*      Log.d(
+                                    "CONTEOFINAL",
+                                    "data ${data!!.size}"
                                 )
-                            )
+                                binding.TextResultado.text = data.toString()
+                             //   data?.map {
+                                for ((index, registro) in data!!.reversed()!!.withIndex()) {
+                                    val hexString =
+                                        registro.substring(0, 8) // valor hexadecimal que se desea convertir
 
-                        }
+                                    Log.d("datosResultTIMESSSSSSSSSSSSSSSSS", "$registro $index  ${convertirHexAFecha(hexString)} ")
+                                }
+        */
 
-                        if (recyclerResultList.isNotEmpty()) {
-                            recyclerResultAdapter = RecyclerResultAdapter(recyclerResultList)
-                            binding.ReciclerResult.adapter = recyclerResultAdapter
-                            binding.ReciclerResult.layoutManager =
-                                LinearLayoutManager(this@MainActivity)
-                        } else {
-                            // Aquí puedes mostrar un Toast u otro mensaje indicando que no se encontraron resultados
-                            Toast.makeText(
-                                this@MainActivity,
-                                "No se encontraron resultados",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        try {
-                            CreateExcelTIME("", data)
-                        } catch (exce: java.lang.Exception) {
+                          data?.reversed()?.map {
+                              val hexString =
+                                  it.substring(0, 8) // valor hexadecimal que se desea convertir
 
-                            binding.TextResultado.text = exce.toString()
-                            MakeToast("$exce")
-                        }
+                              recyclerResultList.add(
+                                  RecyclerResultItem(
+                                      it,
+                                      convertirHexAFecha(hexString)
+                                  )
+                              )
 
-                    }
+                          }
 
-                    override fun onProgress(progress: String): String {
-                        when (progress) {
-                            "Iniciando" -> {
-                                binding.TextResultado.text = progress
-                            }
+                          if (recyclerResultList.isNotEmpty()) {
+                              recyclerResultAdapter = RecyclerResultAdapter(recyclerResultList)
+                              binding.ReciclerResult.adapter = recyclerResultAdapter
+                              binding.ReciclerResult.layoutManager =
+                                  LinearLayoutManager(this@MainActivity)
+                          } else {
+                              // Aquí puedes mostrar un Toast u otro mensaje indicando que no se encontraron resultados
+                              Toast.makeText(
+                                  this@MainActivity,
+                                  "No se encontraron resultados",
+                                  Toast.LENGTH_SHORT
+                              ).show()
+                          }
+                          try {
+                              CreateExcelTIME("", data)
+                          } catch (exce: java.lang.Exception) {
 
-                            "Realizando" -> {
-                                binding.TextResultado.text = progress
+                              binding.TextResultado.text = exce.toString()
+                              MakeToast("$exce")
+                          }
 
-                            }
+                      }
 
-                            "Finalizado" -> {
-                                binding.TextResultado.text = progress
-                            }
+                      override fun onProgress(progress: String): String {
+                          when (progress) {
+                              "Iniciando" -> {
+                                  binding.TextResultado.text = progress
+                              }
 
-                            else -> {
-                                binding.TextResultado.text = progress
-                            }
-                        }
-                        binding.TextResultado.text = progress
-                        Log.d("MyAsyncTaskGeTIME", "progress ${progress}")
-                        return progress
-                    }
+                              "Realizando" -> {
+                                  binding.TextResultado.text = progress
 
-                }).execute()
+                              }
+
+                              "Finalizado" -> {
+                                  binding.TextResultado.text = progress
+                              }
+
+                              else -> {
+                                  binding.TextResultado.text = progress
+                              }
+                          }
+                          binding.TextResultado.text = progress
+                          Log.d("MyAsyncTaskGeTIME", "progress ${progress}")
+                          return progress
+                      }
+
+                  }).execute()
 
 
-                /*   val R = conexionTrefp2.getTime() //conexionTrefp2.getevent()
+                  /*   val R = conexionTrefp2.getTime() //conexionTrefp2.getevent()
 
 
-                   R?.forEachIndexed { index, item ->
+                     R?.forEachIndexed { index, item ->
+                         Log.d(
+                             "getTimeReturn", "Listgetevent getLogeer for ${index} : " + item
+                             //   " res getTREFPBLERealTimeStatus  getlist ${conexionTrefp2.bluetoothServices.bluetoothLeService!!.getList()}"
+                         )
+
+
+
+                         binding.TextResultado.text =
+                             conexionTrefp2.getInfoList().toString()
+
+                     }
+
+
+                     var FinalListData: MutableList<String?> = java.util.ArrayList()
+                     val FinalListTest: MutableList<String?> = java.util.ArrayList()
+                     var isChecksumOk: String
+                     listData.clear()
+                     FinalListDataEvento.map { Log.d("Lectura de datos tipo Evento",it) }
+                     */
+
+                  /* FinalListData = GetRealDataFromHexaImbera.convert(
+                   R    as
+                  MutableList<String?>, "Lectura de datos tipo Tiempo", "1.04"
+                          .toDouble().toString(), "3.5".toDouble().toString()
+                  )
+                  FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(
+                      FinalListData as
+                              MutableList<String>,
+                      "Lectura de datos tipo Evento",
+                      "1.04"
+                          .toDouble().toString(),
+                      "3.5".toDouble().toString()
+                  ).toMutableList()
+  */
+
+
+                  /*
+                   conexionTrefp2.getInfoList()?.forEachIndexed { index, item ->
                        Log.d(
-                           "getTimeReturn", "Listgetevent getLogeer for ${index} : " + item
+                           "getevent", "Listgetevent getLogeer for ${index} : " + item
                            //   " res getTREFPBLERealTimeStatus  getlist ${conexionTrefp2.bluetoothServices.bluetoothLeService!!.getList()}"
                        )
-
-
-
                        binding.TextResultado.text =
-                           conexionTrefp2.getInfoList().toString()
+                           bluetoothServices!!.bluetoothLeService()?.getList().toString()
 
                    }
-
-
-                   var FinalListData: MutableList<String?> = java.util.ArrayList()
-                   val FinalListTest: MutableList<String?> = java.util.ArrayList()
-                   var isChecksumOk: String
-                   listData.clear()
-                   FinalListDataEvento.map { Log.d("Lectura de datos tipo Evento",it) }
                    */
-
-                /* FinalListData = GetRealDataFromHexaImbera.convert(
-                 R    as
-                MutableList<String?>, "Lectura de datos tipo Tiempo", "1.04"
-                        .toDouble().toString(), "3.5".toDouble().toString()
-                )
-                FinalListDataEvento = GetRealDataFromHexaImbera.GetRealData(
-                    FinalListData as
-                            MutableList<String>,
-                    "Lectura de datos tipo Evento",
-                    "1.04"
-                        .toDouble().toString(),
-                    "3.5".toDouble().toString()
-                ).toMutableList()
-*/
-
-
-                /*
-                 conexionTrefp2.getInfoList()?.forEachIndexed { index, item ->
-                     Log.d(
-                         "getevent", "Listgetevent getLogeer for ${index} : " + item
-                         //   " res getTREFPBLERealTimeStatus  getlist ${conexionTrefp2.bluetoothServices.bluetoothLeService!!.getList()}"
-                     )
-                     binding.TextResultado.text =
-                         bluetoothServices!!.bluetoothLeService()?.getList().toString()
-
-                 }
-                 */
-            } else {
-                Toast.makeText(applicationContext, "Conectate a un BLE", Toast.LENGTH_LONG)
-                    .show()
-            }
-            /*
-                        val res = conexionTrefp2.getLogger()
-                        Log.d(
-                            "getLogger", res.toString()
-                            //   " res getTREFPBLERealTimeStatus  getlist ${conexionTrefp2.bluetoothServices.bluetoothLeService!!.getList()}"
-                        )
-                        res.forEachIndexed { index, item ->
-                            Log.d(
-                                "getLogger", "ListLogger for ${index} : " + item
-                                //   " res getTREFPBLERealTimeStatus  getlist ${conexionTrefp2.bluetoothServices.bluetoothLeService!!.getList()}"
-                            )
-                            binding.TextResultado.text =
-                                conexionTrefp2.bluetoothServices.bluetoothLeService!!.getLogeer().toString()
-
-                        }
-                        */
-        }
-        binding.Event.setOnClickListener {
-            //   binding.TextResultado.text = data.toString()
-            val recyclerResultAdapter2 = binding.ReciclerResult.adapter as RecyclerResultAdapter
-            recyclerResultList.clear() // Si recyclerResultList es mutable, puedes usar clear() directamente
-            recyclerResultList.clear()
-            recyclerResultAdapter2.notifyDataSetChanged()
-            //  Log.d("MyAsyncTaskGeEventTREFPPRUEBA", "resultado -> ${obtenerUbicacionEnHexa()}")
-            //    conexionTrefp2.bluetoothLeService!!.sendFirstComando("4054")//  sendCommand("4054")
-            //    conexionTrefp2.Evnt()
-
-            //    conexionTrefp2.LOGGEREVENT(lista as MutableList<String?>)
-            /*   val w =   conexionTrefp2.LOGGEREVENTTIPOTIME(registros as MutableList<String?>)//LOGGEREVENTTIPOTIME()//LOGGEREVENTPRUEBAQW()
-
-                  w?.map {
-                      val hexString = it.substring(0,8) // valor hexadecimal que se desea convertir
-                      val hexString2 = it.substring(8,16)
-                      Log.d("datosResultW", "$it   ${convertirHexAFecha(hexString)}   ${convertirHexAFecha(hexString2)} ")
-                  }*/
-            /*conexionTrefp2.LOGGEREVENTZ()?.map {
-                val hexString = it.substring(0,8) // valor hexadecimal que se desea convertir
-                val hexString2 = it.substring(8,16)
-                println(" conexionTrefp2.LOGGEREVENTZ()?.map $it   ${convertirHexAFecha(hexString)}   ${convertirHexAFecha(hexString2)} ")
-            }
-            */
-            conexionTrefp2.//MyAsyncTaskGeEvent
-            MyAsyncTaskGeEventVALIDACION(object : ConexionTrefp.MyCallback {
-
+              } else {
+                  Toast.makeText(applicationContext, "Conectate a un BLE", Toast.LENGTH_LONG)
+                      .show()
+              }
+          */
+   /*         conexionTrefp2.ObtenerStatus(object : ConexionTrefp.MyCallback {
                 override fun onSuccess(result: Boolean): Boolean {
-                    Log.d("MyAsyncTaskGeEventTREFPPRUEBA", "resultado ${result}")
-
+                    customProgressDialog!!.dismiss()
+                    Log.d("ObtenerStatus", "--------- onSuccess  $result")
                     return result
                 }
 
                 override fun onError(error: String) {
-                    Log.d("MyAsyncTaskGeEventTREFPPRUEBA", "error ${error}")
+                    Log.d("ObtenerStatus", "--------- error  $error")
                 }
 
                 override fun getInfo(data: MutableList<String>?) {
+                    Log.d("ObtenerStatus", "--------- getInfo  $data")
+                }
 
-                    try {
-                        recyclerResultList = ArrayList()
 
-                        //   binding.TextResultado.text = data.toString()
+                override fun onProgress(progress: String): String {
 
-                        val indexCount: MutableList<Int> = ArrayList()
-                        indexCount.clear()
-                        var count = 0
-                        for ((index, item) in data!!.withIndex()) {
-                            val EVENT_TYPE = item!!.substring(16, 18)
-                            if (EVENT_TYPE == "04") {
-                                count++
-                                println("-> $item  $count index $index")
-                                indexCount.add(index!!)
-                            }
-                        }
-                        binding.TextResultado2.text =
-                            "se encontraron ${count} eventos de perdidas de energia"
+                    binding.TextResultado.text = progress
+                    Log.d("ObtenerStatus", "---------progress $progress")
+                    return progress
+                }
+            }
+*/
 
-                        data?.map {
-                            val hexString =
-                                it.substring(0, 8) // valor hexadecimal que se desea convertir
-                            val hexString2 = it.substring(8, 16)
-                            val star = convertirHexAFecha(hexString)
-                            val end = convertirHexAFecha(hexString2)
+            val currentTimeMillis = System.currentTimeMillis()
+            val currentTimeHexNOW = java.lang.Long.toHexString(currentTimeMillis / 1000)
 
-                            recyclerResultList.add(
-                                RecyclerResultItem(
-                                    it,
-                                    "inicio  $star \n final $end"
-                                )
-                            )
-                            //   MakeToast("$it")
-                            Log.d(
-                                "datosResultTIME->>>",
-                                "->S $it   ${convertirHexAFecha(hexString)}   ${
-                                    convertirHexAFecha(hexString2)
-                                } "
-                            )
-                        }
 
-                        if (recyclerResultList.isNotEmpty()) {
-                            recyclerResultAdapter = RecyclerResultAdapter(recyclerResultList)
-                            binding.ReciclerResult.adapter = recyclerResultAdapter
-                            binding.ReciclerResult.layoutManager =
-                                LinearLayoutManager(this@MainActivity)
-                        } else {
-                            // Aquí puedes mostrar un Toast u otro mensaje indicando que no se encontraron resultados
-                            Toast.makeText(
-                                this@MainActivity,
-                                "No se encontraron resultados",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
 
-                        val fechaHoraActual = LocalDateTime.now()
-                        val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss")
-                        val fechaHoraFormateada = fechaHoraActual.format(formato)
-                        CreateExcelEVENT("Evento${fechaHoraFormateada}", data)
-                    } catch (exc: Exception) {
-                        binding.TextResultado2.text = "$exc"
-                        MakeToast("$exc")
-                    }
+            Log.d("asdfghj","currentTimeMillis  $currentTimeMillis currentTimeHexNOW $currentTimeHexNOW")
+            println("currentTimeHexNOW $currentTimeHexNOW ")
 
+
+        }
+        binding.Event.setOnClickListener {
+            //   binding.TextResultado.text = data.toString()
+          /*  val recyclerResultAdapter2 = binding.ReciclerResult.adapter as RecyclerResultAdapter
+            recyclerResultList.clear() // Si recyclerResultList es mutable, puedes usar clear() directamente
+            recyclerResultList.clear()
+            recyclerResultAdapter2.notifyDataSetChanged()
+
+            Log.d("PruebaFuncionConexion","${ conexionTrefp2.isBLEGattConnected()}")
+
+            conexionTrefp2.makeToast("mac ${conexionTrefp2.GetMacBle()}")*/
+           conexionTrefp2. OBtenerComando(object : ConexionTrefp.CallbackLogger {
+                override fun getEvent(data: MutableList<String>?) {
+
+                }
+
+                override fun getTime(data: MutableList<String>?) {
+
+                }
+
+                override fun onError(error: String) {
 
                 }
 
                 override fun onProgress(progress: String): String {
-                    when (progress) {
-                        "Iniciando" -> {
-                        }
+                   return progress
+                }
 
-                        "Realizando" -> {
-                        }
-
-                        "Finalizado" -> {
-                        }
-
-                        else -> {
-
-                        }
-                    }
-                    binding.TextResultado.text = progress
-                    Log.d("MyAsyncTaskGeEventTREFPPRUEBA", "progress ${progress}")
-                    return progress
+                override fun onSuccess(result: Boolean): Boolean {
+                    return  result
                 }
 
             }).execute()
 
 
-            /*         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                          ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-                      } else {
-                        //  checkGooglePlayServices()
-                         checkGooglePlayServicesGEO { latitude, longitude ->
 
-                             Log.d("MainActivity", "checkGooglePlayServices->>>>> Latitude: $latitude, Longitude: $longitude")
-                         }
-                      }
-          */
-            /*          conexionTrefp2.getGEO{exalatitude,exalongitude ->
-
-                          Log.d("MainActivity","conexionTrefp2.getGEO -> exalatitude $exalatitude ,exalongitude $exalongitude")
-                          var CHECKSUMGEO = mutableListOf<String>()
-                          CHECKSUMGEO.add("4058")
-                          CHECKSUMGEO.add(exalatitude)
-                          CHECKSUMGEO.add(exalongitude)
-
-                          Log.d("MainActivity", "CHECKSUMGEO-> ${CHECKSUMGEO.toString()} CKS ${ conexionTrefp2.sumarParesHexadecimales(CHECKSUMGEO)}")
-                      }
-          */
-
-
-            //  conexionTrefp2.GetNowDateExa()
-            val result1 = arrayListOf(
-                "612F6B47612F6B4704FE34FE3473",
-                "612F803A612F803F01FE34FE3482",
-                "612F87FD612F89FD01FE34FE3481"
-            )
-            /*conexionTrefp2.LOGGEREVENTZ(result1 as MutableList<String?>).map {
-                val hexString = it?.substring(0,8) // valor hexadecimal que se desea convertir
-                val hexString2 = it?.substring(8,16)
-                Log.d("datosResult", "$it   ${convertirHexAFecha(hexString!!)}   ${convertirHexAFecha(hexString2!!)} ")
-            }
-            */
 
         }
-
         binding.EstatusConectado.setOnClickListener {
             //   Toast.makeText(applicationContext,"${returnStatus()}",Toast.LENGTH_LONG).show()
 
@@ -933,204 +852,95 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
             */
             var FinalEvento: MutableList<String>? = mutableListOf()
             var FinalTiempo: MutableList<String>? = mutableListOf()
-            conexionTrefp2.ObtenerLogger/*CLogger*/(object : ConexionTrefp.CallbackLogger {
+            var FinalEventoCrudo: MutableList<String>? = mutableListOf()
 
-                /*              override fun onSuccess(result: Boolean): Boolean {
-                                  Log.d("MyAsyncTaskGeLoggerMAIN", "resultado ${result}")
-
-                                  return result
-                              }
-              */
+            conexionTrefp2.ObtenerLoggerVersion2(object : ConexionTrefp.CallbackLogger {
                 override fun onSuccess(result: Boolean): Boolean {
-                    // manejar resultado exitoso
-                    this@MainActivity.runOnUiThread {
-                        progressDialog2!!.secondStop()
-                        // UpdateLayoutLogger(result)
+                    customProgressDialog!!.dismiss()
+                    Log.d("LoggerFUN", "---------  $result ")
+
+                    if (result)
+
+                    {
+                        runOnUiThread {
+                            customProgressDialog!!.show()
+                        customProgressDialog!!.updateText("creando excel")
+                        }
                         val handler = Handler()
                         handler.postDelayed({
                             //LoggerExcel(FinalEvento,FinalTiempo)
-                            createCombinedExcelFile(FinalTiempo, FinalEvento)
-                        }, 500)
+                            createCombinedExcelFile(FinalTiempo, FinalEvento, FinalEventoCrudo)
+                        }, 2000)
                     }
-                    Log.d(
-                        "conexionTrefp2.cMyAsyncTaskGetHandshake",
-                        "${result.toString()}  dispositivo ${sp!!.getString("trefpVersionName", "")}"
-                    )
-
                     return result
                 }
 
                 override fun onError(error: String) {
-                    Log.d("MyAsyncTaskGeLoggerMAIN", "error ${error}")
+                    Log.d("LoggerFUN", "--------- tiempo  $error")
                 }
 
-                override fun getTime(dataTime: MutableList<String>?) {
-                   this@MainActivity.runOnUiThread {
-                        //  ExcelTime(data)
-                        FinalTiempo = dataTime
-                        Log.d(
-                            "SALIDALOGGER",
-                            "SALIDA getTime -> $data  ${sp!!.getString("numversion", "")}"
-                        )
-                    }
-                    //  dataTime?.map { Log.d("MyAsyncTaskGeLogger"," getTime $it") }
-                 /*   runOnUiThread {
-                        // Actualizar vistas de la interfaz de usuario aquí
-
-                        dataTime?.map {
-                            Log.d("SALIDAfinalqqqaaaaaaaaaa", it)
-                        }
-
-                        val recyclerResultAdapter2 =
-                            binding.ReciclerResult.adapter as RecyclerResultAdapter
-                        recyclerResultList.clear() // Si recyclerResultList es mutable, puedes usar clear() directamente
-                        recyclerResultList.clear()
-                        recyclerResultAdapter2.notifyDataSetChanged()
-                        dataTime?.reversed()?.map {
-                            val hexString =
-                                it.substring(0, 8) // valor hexadecimal que se desea convertir
-
-                            recyclerResultList.add(
-                                RecyclerResultItem(
-                                    it,
-                                    convertirHexAFecha(hexString)
-                                )
+                override fun getTime(data: MutableList<String>?) {
+                    FinalTiempo = data
+                    data?.map {
+                        Log.d("LoggerFUN", "getTime $it")
+                        if (it.length > 10) {
+                            Log.d(
+                                "ObtenerLoggerPruebaFUNCION",
+                                "--------- tiempo  $it  ${
+                                    conexionTrefp2.convertirHexAFecha(
+                                        it.substring(
+                                            0,
+                                            8
+                                        )
+                                    )
+                                }"
                             )
-                            Log.d("MyAsyncTaskGeLoggerMAIN", "hexString ${it}")
-                        }
-
-
-                        if (recyclerResultList.isNotEmpty()) {
-                            recyclerResultAdapter = RecyclerResultAdapter(recyclerResultList)
-                            binding.ReciclerResult.adapter = recyclerResultAdapter
-                            binding.ReciclerResult.layoutManager =
-                                LinearLayoutManager(this@MainActivity)
-                        } else {
-                            // Aquí puedes mostrar un Toast u otro mensaje indicando que no se encontraron resultados
-                            Toast.makeText(
-                                this@MainActivity,
-                                "No se encontraron resultados",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        try {
-                            //  if
-                            //    CreateExcelTIME("dataTime", dataTime)
-                        } catch (exce: java.lang.Exception) {
-
-                            binding.TextResultado.text = exce.toString()
-                            MakeToast("$exce")
                         }
                     }
-                    */
                 }
 
                 override fun getEvent(data: MutableList<String>?) {
-                    //  data?.map { Log.d("MyAsyncTaskGeLogger", " getEvent $it") }
-                    try {
-                        recyclerResultList = ArrayList()
-                     //   FinalListDataEvento.clear()
-                       this@MainActivity.runOnUiThread {
-                            //       ExcelEvent(data)
-                            FinalEvento = data
+
+                    FinalEvento = data
+                    data?.map {
+                        Log.d("LoggerFUN", "getEvent $it")
+                        if (it.length > 16) {
                         }
-                        //   binding.TextResultado.text = data.toString()
+                    }
 
-                    /*    data?.map {
-                            Log.d("SALIDAfinalqqqaaaaaaaaaa", it)
+                    data?.map {
+                      //  Log.d("ObtenerLoggerPruebaFUNCION", "getEvent $it")
+                        if (it.length > 16) {
+                            Log.d("ObtenerLoggerPruebaFUNCION","inicio ${convertHexToHumanDateNew(it.substring(0,8))}  final ${convertHexToHumanDateNew(it.substring(8,16))}")
+
                         }
-                        */
-                        /*   val indexCount: MutableList<Int> = ArrayList()
-                           indexCount.clear()
-                           var count = 0
-                           for ((index, item) in data!!.withIndex()) {
-                               val EVENT_TYPE = item!!.substring(16, 18)
-                               if (EVENT_TYPE == "04") {
-                                   count++
-                                   println("-> $item  $count index $index")
-                                   indexCount.add(index!!)
-                               }
-                           }
-                           binding.TextResultado2.text =
-                               "se encontraron ${count} eventos de perdidas de energia"
-
-                           data?.map {
-                               val hexString =
-                                   it.substring(0, 8) // valor hexadecimal que se desea convertir
-                               val hexString2 = it.substring(8, 16)
-                               val star = convertirHexAFecha(hexString)
-                               val end = convertirHexAFecha(hexString2)
-                               Log.d("SalidaEventoAAAA", "inicio  $star \n final $end ${it.substring(16,18)} $it")
-                               recyclerResultList.add(
-                                   RecyclerResultItem(
-                                       it,
-                                       "inicio  $star \n final $end"
-                                   )
-                               )
-                               //   MakeToast("$it")
-                                 Log.d(
-                                     "datosResultTIME->>>",
-                                     "->S $it   ${convertirHexAFecha(hexString)}   ${
-                                         convertirHexAFecha(hexString2)
-                                     } "
-                                 )
-                           }
-
-                           if (recyclerResultList.isNotEmpty()) {
-                               recyclerResultAdapter = RecyclerResultAdapter(recyclerResultList)
-                               binding.ReciclerResult.adapter = recyclerResultAdapter
-                               binding.ReciclerResult.layoutManager =
-                                   LinearLayoutManager(this@MainActivity)
-                           } else {
-                               // Aquí puedes mostrar un Toast u otro mensaje indicando que no se encontraron resultados
-                               Toast.makeText(
-                                   this@MainActivity,
-                                   "No se encontraron resultados",
-                                   Toast.LENGTH_SHORT
-                               ).show()
-                           }
-
-                           val fechaHoraActual = LocalDateTime.now()
-                           val formato = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss")
-                           ExcelEvent(data)
-
-                        */
-
-
-                    } catch (exc: Exception) {
-                        binding.TextResultado2.text = "$exc"
-                        MakeToast("$exc")
                     }
                 }
 
-
+  /*              override fun getEventCrudos(data: MutableList<String>?) {
+                    FinalEventoCrudo = data
+                }
+*/
                 override fun onProgress(progress: String): String {
-                    when (progress) {
-                        "Iniciando" -> {
+                    /*  runOnUiThread {
+                          customProgressDialog!!.show()
+                       */   when (progress) {
+                              "Iniciando Logger" -> {
 
-                        }
+                                  runOnUiThread {
+                                      customProgressDialog!!.show()
+                                      customProgressDialog!!.updateText("Iniciando Logger")
+                                  }}
 
-                        "Realizando" -> {
+//                                  customProgressDialog!!.updateText("Iniciando Logger")
+                              }
 
-
-                        }
-
-                        "Finalizado" -> {
-
-                        }
-
-                        else -> {
-
-                        }
-                    }
                     binding.TextResultado.text = progress
-                    Log.d("MyAsyncTaskGeLoggerMAIN", "progress ${progress}")
+                    Log.d("LoggerFUN", "---------progress $progress")
                     return progress
                 }
 
-            })///.execute()
-
-
+            }).execute()
             /*          conexionTrefp2./*MyAsyncTaskGetLogger*/CLogger(object : ConexionTrefp.CallbackLogger {
                           override fun onSuccess(result: Boolean): Boolean {
                              return result
@@ -1157,6 +967,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
 
         }
+
         binding.BTNReset.setOnClickListener {
             /*  conexionTrefp2.MyAsyncTaskResetMemory(object :ConexionTrefp.MyCallback{
                   override fun getInfo(data: MutableList<String>?) {
@@ -1192,37 +1003,17 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 }
 
                 override fun getInfo(data: MutableList<String>?) {
-
-                    //  GlobalTools.checkChecksum(data)
                     data?.map { Log.d("MyAsyncTaskResetMe", it + "  ") }
                 }
 
-
                 override fun onProgress(progress: String): String {
-                    when (progress) {
-                        "Iniciando" -> {
-
-                        }
-
-                        "Realizando" -> {
-
-
-                        }
-
-                        "Finalizado" -> {
-
-                        }
-
-                        else -> {
-
-                        }
-                    }
                     binding.TextResultado.text = progress
                     Log.d("MyAsyncTaskResetMe", "progress ${progress}")
                     return progress
                 }
-
             }).execute()
+            //  var FinalEvento: MutableList<String>? =listOf(
+
         }
         binding.BTNGETTIME.setOnClickListener {
             /*  conexionTrefp2.MyAsyncTaskResetMemory(object :ConexionTrefp.MyCallback{
@@ -1260,10 +1051,17 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 override fun getInfo(data: MutableList<String>?) {
 
                     //  GlobalTools.checkChecksum(data)
-
+                    data?.let {
+                        var fe = it.first()
+                        var sinespacio = fe?.replace(" ", "")
+                        binding.TextResultado.text = convertirHexAFecha(sinespacio!!)
+                    }
+                    var fe = data?.first()
+                    fe
                     data?.map {
-                        binding.TextResultado.text = convertirHexAFecha(it)
-                        Log.d("MyAsyncTaskGetHour", it + " FECHA   ${convertirHexAFecha(it)}")
+                        //    binding.TextResultado.text = convertirHexAFecha(it)
+                        // Log.d("MyAsyncTaskGetHour", it + " FECHA   ${convertirHexAFecha(it)} cadena $it")
+                        Log.d("MyAsyncTaskGetHour", it + " FECHA  del control   ${convertirHexAFecha(it)}")
                     }
                 }
 
@@ -1362,17 +1160,14 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
                 override fun onError(error: String) {
                     Log.d("MyAsyncTaskSendDateHour", "error $error")
-                    MakeToast(error)
+                    runOnUiThread {
+                        MakeToast(error)
+                    }
                 }
 
                 override fun getInfo(data: MutableList<String>?) {
-
-                    //  GlobalTools.checkChecksum(data)
-
-
                     data?.map {
-                        Log.d("MyAsyncTaskSendDateHour", it + "  ${convertirHexAFecha(it)}")
-                        binding.TextResultado.text = convertirHexAFecha(it)
+                        Log.d("MyAsyncTaskSendDateHour", "$it ")
                     }
                 }
 
@@ -1395,12 +1190,9 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
                         }
                     }
-
                     Log.d("MyAsyncTaskSendDateHour", "progress ${progress}")
                     return progress
                 }
-
-
             }).execute()
 
 
@@ -1410,7 +1202,6 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
                 override fun onSuccess(result: Boolean): Boolean {
                     Log.d("MyAsyncTaskGetXY", "resultado ${result}")
-
                     return result
                 }
 
@@ -1463,12 +1254,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                                 "S ${it1.substring(1).uppercase()}"
                             )
                         }
-                        /* if(it1.toFloat()>0)
-                         {
-                             conexionTrefp2.convertHexaToDecimalWithTwoDecimals(it1)
-                         }else{
-                             getNegativeTempfloat("FFFF$it1")
-                         }*/
+
                     }
 
 
@@ -1485,12 +1271,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                                 "FFFF${it1}"
                             )//.toFloat()
                         else SalidaLONGITUDZ = conexionTrefp2.getDecimalFloat(it1).toString()
-                        /* if(it1.toFloat()>0)
-                         {
-                             conexionTrefp2.convertHexaToDecimalWithTwoDecimals(it1)
-                         }else{
-                             getNegativeTempfloat("FFFF$it1")
-                         }*/
+
                     }
 
 
@@ -1531,30 +1312,10 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
             }).execute()
 
-            /*conexionTrefp2.getDeviceLocation { latitude, longitude ->
-                String.format("%.4f", latitude).toFloat().toString()
-                var la = latitude
-                var lo = longitude
 
-                    conexionTrefp2.isWithinRange(this,latitude.toDouble(), longitude.toDouble(), binding.Textlatitud.toString().toDouble()
-                        , binding.TextAltitud.toString().toDouble(),object : ConexionTrefp.OnRangeCheckListener{
-                        override fun onRangeChecked(isWithinRange: Boolean): Boolean {
-                            MakeToast(
-                                "la $latitude ${conexionTrefp2.convertDecimalToHexa((latitude))}   lo $longitude ${
-                                    conexionTrefp2.convertDecimalToHexa((longitude))}" +"\n la distancia esta dentro del rango  $isWithinRange" )
-                          return  isWithinRange
-                        }
-                    })
-                /*  MakeToast("latitud ${String.format("%.4f", latitude).toFloat().toString()}" +
-                          " longitud ${String.format("%.4f", longitude).toFloat().toString()}")
-                */
-               /* MakeToast(
-                    "la $latitude ${conexionTrefp2.convertDecimalToHexa((latitude))}   lo $longitude ${
-                        conexionTrefp2.convertDecimalToHexa((longitude))}" +"\n la distancia esta dentro del rango  $distance" )
-                */
-            }*/
         }
         binding.BTNOSENDGEO.setOnClickListener {
+
 
             var Latitud = binding.Textlatitud.text.toString()//.toDouble() //19.39198f //
             var Longitud =
@@ -1564,74 +1325,72 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                    var la = latitude
                    var lo = longitude
    */
-            if (Latitud.isNotEmpty() && Longitud.isNotEmpty()) {
-                conexionTrefp2.MyAsyncTaskSendXYNew(
-                    Latitud.toDouble(), //.toDouble()/*-21.51f*/,
-                    Longitud.toDouble(), // toDouble(),
-                    object : ConexionTrefp.MyCallback {
 
-                        override fun onSuccess(result: Boolean): Boolean {
-                            Log.d("MyAsyncTaskSendXYPRueba", "resultado ${result}")
-                            MakeToast("resultado ${result.toString()}")
-                            return result
-                        }
 
-                        override fun onError(error: String) {
-                            Log.d("MyAsyncTaskSendXYPRueba", "error ${error}")
-                            //  MakeToast("resultado $error")
-                        }
+            // Función que ejecuta MyAsyncTaskSendXYNewPRueba cada 15 segundos
 
-                        override fun getInfo(data: MutableList<String>?) {
-                            Log.d("MyAsyncTaskSendXYPRueba", "progress $data")
-                            binding.TextResultado.text = data.toString()
-                            //   MakeToast(data.toString())
-                            //  GlobalTools.checkChecksum(data)
-                            //  data?.map { Log.d("MyAsyncTaskGeEventTREFPPRUEBA", it + "  ") }
-                            /*  data?.let {
-                                  Log.d(
-                                      "MyAsyncTaskSendXYPRueba",
-                                      "$it"
-                                  )
-                                  MakeToast("$it")
-                              } ?: {
-                                  Log.d(
-                                      "MyAsyncTaskSendXYPRueba",
-                                      "sin datos"
-                                  )
-                              }
-                              */
-                        }
+            scope.launch {
+                var contador = 1
+                while (contador <= 1) {
+                    if (Latitud.isNotEmpty() && Longitud.isNotEmpty()) {
+                        conexionTrefp2.MyAsyncTaskSendXYNew(
+                            Latitud.toDouble(),
+                            Longitud.toDouble(),
+                            object : ConexionTrefp.MyCallback {
 
-                        override fun onProgress(progress: String): String {
-                            when (progress) {
-                                "Iniciando" -> {
+                                override fun onSuccess(result: Boolean): Boolean {
+                                    var name = sp?.getString("name", "")
+                                    var mac = sp?.getString("mac", "")
                                     Log.d(
                                         "MyAsyncTaskSendXYPRueba",
-                                        "resultado ${Latitud.toDouble()} ${Longitud.toDouble()}"
+                                        "resultado $result   intento $contador  ble $name mac $mac   "
                                     )
-                                    binding.TextResultado.text = progress
+                                    MakeToast("resultado ${result.toString()}")
+                                    return result
                                 }
 
-                                "Realizando" -> {
-                                    binding.TextResultado.text = progress
-
+                                override fun onError(error: String) {
+                                    Log.d("MyAsyncTaskSendXYPRueba", "error ${error}")
+                                    //  MakeToast("resultado $error")
                                 }
 
-                                "Finalizado" -> {
-                                    binding.TextResultado.text = progress
+                                override fun getInfo(data: MutableList<String>?) {
+                                    Log.d("MyAsyncTaskSendXYPRueba", "getInfo $data")
+                                    binding.TextResultado.text = data.toString()
                                 }
 
-                                else -> {
+                                override fun onProgress(progress: String): String {
+                                    when (progress) {
+                                        "Iniciando" -> {
+                                            binding.TextResultado.text = progress
+                                        }
 
+                                        "Realizando" -> {
+                                            binding.TextResultado.text = progress
+                                        }
+
+                                        "Finalizado" -> {
+                                            binding.TextResultado.text = progress
+                                        }
+
+                                        else -> {
+                                        }
+                                    }
+
+                                    Log.d("MyAsyncTaskSendXYPRueba", "progress $progress")
+                                    return progress
                                 }
-                            }
 
-                            Log.d("MyAsyncTaskSendXYPRueba", "progress $progress")
-                            return progress
-                        }
+                            }).execute()
+                    } else
 
-                    }).execute()
-            } else MakeToast("Debes de llenar los campos")
+                        MakeToast("Debes de llenar los campos")
+
+                    // Esperar 15 segundos antes de continuar con la siguiente iteración
+                    delay(15000)
+                    contador++
+                }
+            }
 
 
             //     }
@@ -1697,7 +1456,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
           */
         }
         binding.imageView2.setOnClickListener {
-            conexionTrefp2.getDeviceLocation { latitude, longitude ->
+            getDeviceLocation { latitude, longitude ->
                 //  String.format("%.4f", latitude).toFloat().toString()
                 var la = latitude
                 var lo = longitude
@@ -1705,6 +1464,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 binding.Textlatitud.setText(latitude.toString())
                 binding.TextAltitud.setText(longitude.toString())
 
+                Log.d("geo ", "latitude $latitude longitude $longitude")
                 /*   conexionTrefp2.LoGe( latitude.toDouble()/*-21.51f*/,
                        longitude.toDouble(),object : ConexionTrefp.MyCallback{
                            override fun onSuccess(result: Boolean): Boolean {
@@ -1914,15 +1674,503 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                       })
           */
         }
+        binding.BtnWifi.setOnClickListener {
+//            conexionTrefp2.createProgressDialogwifi()
+           conexionTrefp2.getInfoWifi(object : ConexionTrefp.MyCallback{
+                override fun getInfo(data: MutableList<String>?) {
+                    Log.d("getInfoWifi","data $data")
+                   data?.map {
 
+                   }
+                }
 
+                override fun onError(error: String) {
+                    Log.d("getInfoWifi","onError ${error.toString()}")
+                }
+
+                override fun onProgress(progress: String): String {
+                    Log.d("getInfoWifi","progress $progress")
+                    return progress
+                }
+
+                override fun onSuccess(result: Boolean): Boolean {
+                    Log.d("getInfoWifi","result $result")
+                    return  result
+                }
+            })
+        }
+
+        binding.BtnSendWifi.setOnClickListener {
+
+//            binding.TextAltitud.text  setText("ELTEC_apps")
+//            binding.Textlatitud.text.toString(),  setText("975318642a")
+            conexionTrefp2.MyAsyncTaskSendWifiPrincipal(binding.TextAltitud.text.toString(),binding.Textlatitud.text.toString(), object : ConexionTrefp.MyCallback{
+                override fun getInfo(data: MutableList<String>?) {
+                    data?.map {
+                        Log.d("BtnSendWifi","data $it")
+                    }
+                }
+
+                override fun onError(error: String) {
+                    Log.d("BtnSendWifi","onError ${error.toString()}")
+                }
+
+                override fun onProgress(progress: String): String {
+                    Log.d("BtnSendWifi","progress $progress")
+                    return progress
+                }
+
+                override fun onSuccess(result: Boolean): Boolean {
+                    Log.d("BtnSendWifi","result $result")
+                    return  result
+                }
+            })
+        }
+        binding.BtnSendWifiSecundario.setOnClickListener {
+            conexionTrefp2.MyAsyncTaskSendWifiSecundario(binding.TextAltitud.text.toString(),binding.Textlatitud.text.toString(), object : ConexionTrefp.MyCallback{
+                override fun getInfo(data: MutableList<String>?) {
+                    data?.map {
+                        Log.d("BtnSendWifi","data $it")
+                    }
+                }
+
+                override fun onError(error: String) {
+                    Log.d("BtnSendWifi","onError ${error.toString()}")
+                }
+
+                override fun onProgress(progress: String): String {
+                    Log.d("BtnSendWifi","progress $progress")
+                    return progress
+                }
+
+                override fun onSuccess(result: Boolean): Boolean {
+                    Log.d("BtnSendWifi","result $result")
+                    return  result
+                }
+            })
+        }
         validaCONEXION()
 
     }
+/*
+    fun MyAsyncTaskSendWifiPrincipal(ssid : String, pass : String,callback: ConexionTrefp.MyCallback){
+        SendWifi(ssid,pass, "BLE_WIFI_NEW_SSID=", callback)
+    }
+    fun MyAsyncTaskSendWifiSecundario(ssid : String, pass : String,callback: ConexionTrefp.MyCallback){
+        SendWifi(ssid,pass, "BLE_WIFI_NEW_SSID_2=", callback)
+    }
+    fun SendWifi(ssid : String, pass : String, comando : String, callback: ConexionTrefp.MyCallback){
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            var bluetoothLeService = conexionTrefp2.bluetoothLeService
+            Log.d("BtnSendWifi","bluetoothLeService  $bluetoothLeService")
+            var listData: List<String>? = arrayListOf()
+            val toSendb: ByteArray
+            var bytesTemp: Array<Byte?>? = null
+            var   command = ""
+            command = comando + ssid + ";" + 0x08.toChar() + pass + ";" + 0x08.toChar()
+            bytesTemp = arrayOfNulls(command.toByteArray().size)
+            for (i in command.toByteArray().indices) {
+                bytesTemp!![i] = command.toByteArray()[i]
+            }
+            toSendb = ByteArray(bytesTemp!!.size)
+            var j = 0
+            for (b in bytesTemp!!) {
+                if (b != null) {
+                    toSendb[j++] = b
+                }
+            }
+            var  FinalPlantillaValorestoExa = mutableListOf<Pair<String, String>>()
+            val corrutina1 = launch {
+
+                callback.onProgress("Iniciando")
+                try {
+                    if (bluetoothLeService == null)
+                    {
+                        callback.onError("Error de conexión")
+                        callback.onSuccess(false)
+                    }
+                    else{
+                        runOnUiThread {
+//                            conexionTrefp2.bluetoothServices.sendCommandWifiPrincipal(ssid, pass)
+                            bluetoothLeService!!.sendComandoW(command, toSendb)
+                        }
+                        Thread.sleep(500)
+                        listData = bluetoothLeService!!.getDataFromBroadcastUpdate() //as MutableList<String>
+                        if (listData?.isNotEmpty() == true){
+                            // CON RESPUESTA
+                            callback.onSuccess(true)
+                        }
+                        else{
+                            // SIN RESPUESTA
+                            callback.onError("No se obtuvo respuesta del control")
+                            callback.onSuccess(false)
+                        }
+                    }
+                } catch (e: InterruptedException) {
+                    throw RuntimeException(e)
+                    callback.onError(e.toString())
+                    callback.onSuccess(false)
+                }
+            }
+            corrutina1.join()
+            val corrutina2 = launch{
+                callback.onProgress("Finalizando")
+            }
+            corrutina2.join()
+
+        }
+
+
+        runBlocking {
+            job.join()
+        }
+    }
+
+    fun SendCommandWifi(toSendb: ByteArray, command : String) {
+        var toSendb = toSendb
+
+
+        Log.d(
+            "MyAsyncTaskGetFirmwareBd",
+            " second command $command   toSendb $toSendb   "
+        )
+        val scope = CoroutineScope(Dispatchers.Default)
+        scope.launch {
+            val pre = withContext(Dispatchers.Default) {
+
+
+                if (bluetoothLeService == null) {
+                    return@withContext "notConnected"
+                } else {
+                    Log.d("wifiCommand", ":$command")
+                    try {
+                        bluetoothLeService!!.sendComandoW(command, toSendb)
+                        Thread.sleep(350)
+
+                    } catch (e: InterruptedException) {
+                        throw RuntimeException(e)
+                    }
+                }
+            }
+            val result = withContext(Dispatchers.Default) {
+                try {
+                    Thread.sleep(300)
+
+                    /*listData.clear();
+                listData = bluetoothLeService.getDataFromBroadcastUpdate();
+                FinalListData.clear();*/if (pre == "notConnected") {
+                        runOnUiThread {
+                          //  makeToast("Conéctate a un BLE")
+                        }
+                    } else {
+                        runOnUiThread {
+                         //   makeToast("Escritura correcta")
+                        }
+                    }
+
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+    }
+
+
+
+    fun getInfoWifi(callback: ConexionTrefp.MyCallback){
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            var bluetoothLeService = conexionTrefp2.bluetoothLeService
+            var  FinalPlantillaValorestoExa = mutableListOf<Pair<String, String>>()
+            val corrutina1 = launch {
+                println("")
+               callback.onProgress("Iniciando")
+            /*    try {
+                    // bluetoothLeService = bluetoothServices.getBluetoothLeService()
+
+
+                    //para leer
+                    var listData: List<String?>? = ArrayList()
+                    var listDatafinal: List<String?> = ArrayList()
+                    val toSendb: ByteArray
+                    var bytesTemp: Array<Byte?>?
+                    val command: String
+                    //para leer
+
+                    //para leer
+                    bytesTemp = null
+                    command = "BLE_WIFI_STATE=?"
+                    bytesTemp = arrayOfNulls(command.toByteArray().size)
+                    for (i in command.toByteArray().indices) {
+                        bytesTemp[i] = command.toByteArray()[i]
+                    }
+
+                    toSendb = ByteArray(bytesTemp.size)
+                    var j = 0
+                    for (b in bytesTemp) {
+                        if (b != null) {
+                            toSendb[j++] = b
+                        }
+                    }
+                    callback.onProgress("Realizando")
+
+                    if (bluetoothLeService == null)
+                    {
+                        callback.onError("Error de conexión")
+                        callback.onSuccess(false)
+                    }
+                    else{
+                        bluetoothLeService!!.sendComandoW(command, toSendb)
+                        Log.d("wifiCommandStatus", ":$command")
+                        Thread.sleep(800)
+
+                        listData = bluetoothLeService!!.getDataFromBroadcastUpdate() //as MutableList<String>
+
+                        if (listData?.isNotEmpty() == true){
+                            listDatafinal = listData?.let { hexToAsciiWifi(it) as MutableList<String> }!!
+                            Log.d("wifiCommandStat", "listData :$listData  \n ${hexToAsciiWifi(listData!!)}" +
+                                    "\n  $listDatafinal")
+                            callback.getInfo(listDatafinal as MutableList<String>)
+                            callback.onSuccess(true)
+                        }
+                        else{
+                            callback.onError("No se obtuvo respuesta del control")
+                            callback.onSuccess(false)
+                        }
+                    }
+                } catch (e: InterruptedException)
+                {
+                    throw RuntimeException(e)
+                    callback.onError(e.toString())
+                    callback.onSuccess(false)
+                }
+                */
+                var listData: List<String?>? = ArrayList()
+                var listDatafinal: List<String?> = ArrayList()
+                val toSendb: ByteArray
+                var bytesTemp: Array<Byte?>?
+                val command: String
+
+                //para leer
+
+                //para leer
+                bytesTemp = null
+                command = "BLE_WIFI_STATE=?"
+                bytesTemp = arrayOfNulls(command.toByteArray().size)
+                for (i in command.toByteArray().indices) {
+                    bytesTemp[i] = command.toByteArray()[i]
+                }
+
+                toSendb = ByteArray(bytesTemp.size)
+                var j = 0
+                for (b in bytesTemp) {
+                    if (b != null) {
+                        toSendb[j++] = b
+                    }
+                }
+
+
+                Log.d("wifiCommandStatus", ":$command toSendb $toSendb ${conexionTrefp2.getStatusConnectBle()}")
+            //    callback.onProgress("Finalizando")
+
+
+                if ( conexionTrefp2.getStatusConnectBle())
+                {
+                    bluetoothLeService!!.sendComandoW(command, toSendb)
+
+                    Thread.sleep(500)
+                    listData = bluetoothLeService!!.dataFromBroadcastUpdate
+
+
+
+
+
+                    Log.d("wifiCommandStat", ":$listDatafinal    listData $listData")
+                    if (listData.isNullOrEmpty())
+                    {
+                        callback.onError("Lista vacia")
+                    }
+                    else {
+                        listDatafinal = hexToAsciiWifi(listData)
+                        val g = java.lang.StringBuilder()
+                        g.append("Información completa de la conexión Wi-Fi:")
+                        for (i in listDatafinal.indices) {
+                            //el espacio numero 3 es sustituido por otro texto
+                            //if (i==3){
+                            //   g.append(seF);
+                            // }else{
+                            //if (i!=6){//el espacio 6 no aparece en la interfaz
+                            g.append(listDatafinal.get(i))
+                            //}
+                            //}
+                        }
+                        callback.getInfo(listDatafinal as MutableList<String>)
+                        //        Log.d("getInfoWifi","getInfoWifi $g")
+                    }
+                }
+                else{
+                    callback.onError("Desconectado")
+                }
+
+
+            }
+            corrutina1.join()
+            val corrutina2 = launch{
+              callback.onProgress("Finalizando")
+            }
+            corrutina2.join()
+
+            println("Finalizado")
+
+        }
+
+
+        runBlocking {
+            job.join()
+        }
+    }
+
+    fun hexToAsciiWifi(hex: List<String?>): List<String> {
+        val arrayListInfo = mutableListOf<String>()
+        val hexStrr = StringBuilder()
+        for (i in hex.indices) {
+            hexStrr.append(hex[i])
+        }
+        val hexStr = hexStrr.toString().replace(" ", "")
+        val output = StringBuilder()
+        Log.d("YYY", ":$hexStr")
+        var j = 0 // identificar el dato, SSID 0, IP=1, MAC_STA 2, IOT_CORE 3, SSID2 4, VER 5, MQTT
+        // estado completo
+        var i = 0
+        while (i < hexStr.length) {
+            val strSeparacion = hexStr.substring(i, i + 4)
+            Log.d("opo", ":" + output.length)
+            Log.d("opo", ":$output")
+            if (strSeparacion == "3B08") { // punto y coma ;
+                arrayListInfo.add("\n${output.toString()}")
+                j++
+                output.delete(0, output.length)
+                i += 2
+            } else {
+                val str = hexStr.substring(i, i + 2)
+                output.append(str.toInt(16).toChar())
+            }
+            i += 2
+        }
+        return arrayListInfo
+    }
+*/
+    private fun VEvent(arrayLists: MutableList<String?>): MutableList<String?> {
+        var arrayListInfo: MutableList<String?> = ArrayList()
+        var arrayListInfoFG: MutableList<String?> = ArrayList()
+        val s = GetRealDataFromHexaOxxoDisplay.cleanSpace(arrayLists)
+        if (!arrayLists.isEmpty() && s.toString().length >= 16) {
+
+            val datos: MutableList<String> = ArrayList()
+            val datos2: MutableList<String> = ArrayList()
+            //header
+            Log.d("", "sss}Evento:" + s.length)
+            arrayListInfo.add(s.substring(0, 4)) //head
+            arrayListInfo.add(s.substring(4, 12)) //
+            arrayListInfo.add(s.substring(12, 14)) //modelo trefpb
+            arrayListInfo.add(s.substring(14, 16)) //version
+            val st = StringBuilder()
+            st.append(s.substring(16, s.length - 8))
+            // Log.d("LPOPOP", "crudotiempoTEvento:$fwversion")
+            //   Log.d("LPOPOP", "crudotiempoTEvento:$modelo")
+            if (/*sp?.getString("numversion", "")  /*fwversion*/ == "1.02" && sp?.getString(
+                    "modelo",
+                    ""
+                )/*modelo */ == "3.3" || sp?.getString("numversion", "") == "1.04" && sp?.getString(
+                    "modelo",
+                    ""
+                ) == "3.5"
+                || sp?.getString("numversion", "") == "1.01" && sp?.getString("modelo", "") == "8.1"*/true
+            ) { //nuevo logger, diferente división de información
+                var i = 0
+                do { //dividir toda la información en paquetes de 128 bytes
+                    if (i + 256 > st.length) {
+                        datos.add(st.substring(i)) //checksum
+                        break
+                    } else datos.add(st.substring(i, i + 256))
+                    i = i + 256
+                } while (i < st.length)
+                Log.d("", "DataEvento:$datos")
+                var j = 0
+                do { //dividir los paquetes de 128 bytes según el protocolo
+                    i = 0
+                    while (i < datos[j].length) {
+                        if (i + 28 > datos[j].length) {
+                            datos2.add(datos[j].substring(i)) //checksum
+                            break
+                        } else datos2.add(datos[j].substring(i, i + 28))
+                        i += 28
+                    }
+                    j++
+                } while (j < datos.size)
+                Log.d("", "crudotiempoDAots2:$datos2")
+                Log.d("", "ultimondatos2:" + datos2[datos2.size - 1])
+
+                //organizar la información que realmente sirve (quitar 0s)
+                var h = 4
+                //String numeroRegistrosNuevos = datos2.get(datos.size()-2);
+                var o = 0
+                while (o < datos2.size) {
+                    if (datos2[o].length != 4 && datos2[o] != "0000000000000000000000000000") {
+                        arrayListInfo.add(datos2[o])
+                        Log.d(
+                            "crudoEventoFOR",
+                            "crudoEventoFOR:" + arrayListInfo[h]
+                        )
+                        h++
+                    }
+                    o++
+                }
+            } else {
+                var i = 16
+                while (i < s.length) {
+                    if (i + 28 > s.length) {
+                        //arrayListInfo.add(s.substring(i));//checksum
+                        break
+                    } else arrayListInfo.add(
+                        s.substring(
+                            i,
+                            i + 28
+                        )
+                    )
+                    i += 28
+                }
+                Log.d("", "crudoEvento:" + arrayListInfo)
+
+            }
+        }
+        return arrayListInfo
+    }
+    fun convertHexToHumanDateNew(hexTimestamp: String): String? {
+        val unixTimestamp = hexTimestamp.toLong(16)
+        val date = Date(unixTimestamp * 1000)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("es", "MX"))
+        dateFormat.timeZone = TimeZone.getTimeZone("America/Mexico_City") // Utiliza la zona horaria de México
+        return dateFormat.format(date)
+    }
+    fun characteristicToHexString(characteristic: String): String {
+
+        val inputString = String
+        val byteArray = inputString.toString().toByteArray(Charsets.UTF_32LE)
+
+        Log.d("salidaCaract", characteristic + "   " + byteArray.toString())
+        val formatter = Formatter()
+        for (b in byteArray) {
+            formatter.format("%02x", b)
+        }
+        return formatter.toString()
+    }
+
 
     private fun createCombinedExcelFile(
         dataTime: MutableList<String>?,
-        dataEvent: MutableList<String>?
+        dataEvent: MutableList<String>?,
+        dataEventCrudos: MutableList<String>?
     ) {
         val workbook = XSSFWorkbook()
 
@@ -1943,6 +2191,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
         )
 
         // Crear la hoja "Event" y agregar títulos y datos
+
         createExcelSheet(
             dataEvent,
             "Event",
@@ -1952,20 +2201,24 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 "TimeStampEnd",
                 "Temperatura 1",
                 "Temperatura 1",
-                "Voltaje",
+                "Consumo",
                 "TipoEvent",
                 "Original"
             ),
             2,
             workbook
         )
+        createExcelSheet(dataEventCrudos,"Datos Crudos", arrayOf("datos"),2,workbook)
 
         val nombreFile =
-            "LoggerCombined ${sp!!.getString("mac", "")} ${Calendar.getInstance().time}.xlsx"
+            "LoggerImbera ${sp!!.getString("mac", "")} ${Calendar.getInstance().time}.xlsx"
         val file: File = File(this.getExternalFilesDir(null), nombreFile)
         val outputStream = FileOutputStream(file)
         workbook.write(outputStream)
         outputStream.close()
+        runOnUiThread {
+            customProgressDialog!!.dismiss()
+        }
         try {
 
             this.runOnUiThread {
@@ -1997,6 +2250,7 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
         }
         // Tu código para mostrar un mensaje de éxito o error
     }
+
     private fun createExcelSheet(
         data: MutableList<String>?,
         sheetName: String,
@@ -2051,62 +2305,73 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                     true //styleceldaOscura // Inicia con el estilo oscuro
                 var index = 1
                 val filaTIME = sheet.createRow(filaNumTIME++)
-                if (data != null) {
-                    for (dato in data) {
+                if (data != null ) {
 
-                        val indiceReal = index + 1
-                        var TimeStampR = dato.substring(0, 8)
-                        var voltajeR = dato.substring(18, 20)
-                        var Temp2R =
-                            conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(12, 16))
-                        var Temp1R = conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(8, 12))
-                        val filaTIME = sheet.createRow(filaNumTIME++)
-                        // colNumTIME = 0
-                        val Iteración = filaTIME.createCell(colNumTIME++)
-                        Iteración.setCellValue(index.toString())
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Iteración.setCellStyle(
-                            styleceldaOscura
-                        ) else Iteración.setCellStyle(styleceldaClara)
-                        val TimeStamp = filaTIME.createCell(colNumTIME++)
-                        TimeStamp.setCellValue(conexionTrefp2.convertHexToHumanDateLogger(TimeStampR))
-                        if (estiloActual/*.equals(styleceldaOscura)*/) TimeStamp.setCellStyle(
-                            styleceldaOscura
-                        ) else TimeStamp.setCellStyle(styleceldaClara)
+                    for (dato in data)
+
+                    {
+                      if (dato.length>18)  {
+
+                            val indiceReal = index  //+ 1
+                            var TimeStampR = dato.substring(0, 8)
+                            var voltajeR = dato.substring(18, 20)
+                            var Temp2R =
+                                conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(12, 16))
+                            var Temp1R =
+                                conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(8, 12))
+                            val filaTIME = sheet.createRow(filaNumTIME++)
+                            // colNumTIME = 0
+                            val Iteración = filaTIME.createCell(colNumTIME++)
+                            Iteración.setCellValue(index.toString())
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Iteración.setCellStyle(
+                                styleceldaOscura
+                            ) else Iteración.setCellStyle(styleceldaClara)
+                            val TimeStamp = filaTIME.createCell(colNumTIME++)
+                            TimeStamp.setCellValue(
+                                conexionTrefp2.convertHexToHumanDateLogger(
+                                    TimeStampR
+                                )
+                            )
+                            if (estiloActual/*.equals(styleceldaOscura)*/) TimeStamp.setCellStyle(
+                                styleceldaOscura
+                            ) else TimeStamp.setCellStyle(styleceldaClara)
 
 
-                        val Temp1 = filaTIME.createCell(colNumTIME++)
-                        Temp1.setCellValue(Temp1R)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Temp1.setCellStyle(
-                            styleceldaOscura
-                        ) else Temp1.setCellStyle(styleceldaClara)
+                            val Temp1 = filaTIME.createCell(colNumTIME++)
+                            Temp1.setCellValue(Temp1R)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Temp1.setCellStyle(
+                                styleceldaOscura
+                            ) else Temp1.setCellStyle(styleceldaClara)
 
-                        val Temp2 = filaTIME.createCell(colNumTIME++)
-                        Temp2.setCellValue(Temp2R)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Temp2.setCellStyle(
-                            styleceldaOscura
-                        ) else Temp2.setCellStyle(styleceldaClara)
+                            val Temp2 = filaTIME.createCell(colNumTIME++)
+                            Temp2.setCellValue(Temp2R)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Temp2.setCellStyle(
+                                styleceldaOscura
+                            ) else Temp2.setCellStyle(styleceldaClara)
 
-                        val voltaje = filaTIME.createCell(colNumTIME++)
-                        voltaje.setCellValue("${conexionTrefp2.getDecimal(voltajeR)}  Vca")  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) voltaje.setCellStyle(
-                            styleceldaOscura
-                        ) else voltaje.setCellStyle(styleceldaClara)
+                            val voltaje = filaTIME.createCell(colNumTIME++)
+                            voltaje.setCellValue("${conexionTrefp2.getDecimal(voltajeR)}  Vca")  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) voltaje.setCellStyle(
+                                styleceldaOscura
+                            ) else voltaje.setCellStyle(styleceldaClara)
 
-                        val Original = filaTIME.createCell(colNumTIME++)
-                        Original.setCellValue(dato)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Original.setCellStyle(
-                            styleceldaOscura
-                        ) else Original.setCellStyle(styleceldaClara)
+                            val Original = filaTIME.createCell(colNumTIME++)
+                            Original.setCellValue(dato)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Original.setCellStyle(
+                                styleceldaOscura
+                            ) else Original.setCellStyle(styleceldaClara)
 
-                        //     estiloActual = false
-                        index++
-                        // Alternar entre estilos
-                        if (estiloActual) {
-                            Iteración.setCellStyle(styleceldaOscura)
-                        } else {
-                            Iteración.setCellStyle(styleceldaClara)
+                            //     estiloActual = false
+                            index++
+                            // Alternar entre estilos
+                            if (estiloActual) {
+                                Iteración.setCellStyle(styleceldaOscura)
+                            } else {
+                                Iteración.setCellStyle(styleceldaClara)
+                            }
+                            estiloActual = !estiloActual
+                            colNumTIME = 0
                         }
-                        estiloActual = !estiloActual
                     }
                 }
                 index = index + 5
@@ -2171,97 +2436,117 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                 if (data != null) {
                     for (dato in data) {
 
+                        Log.d("debugConco", "dato $dato")
+                        if (dato.length >= 30) {
+                            val indiceReal = index
 
-                        val indiceReal = index
-                        var TimeStampStartR = dato.substring(0, 8)
-                        var TimeStampEndR = dato.substring(8, 16)
-                       var voltajeR = dato.substring(28, 30)
-                        var TipoEventR = dato.substring(16, 18)
+                            var TimeStampStartR = dato.substring(0, 8)
+                            var TimeStampEndR = dato.substring(8, 16)
+                            var voltajeR =
+                                if (sp!!.getString("name","").equals("CEO_CONCO")){
+                                    dato.substring(28, 32)
+                                }else{
+                                    dato.substring(28, 30)
+                                }
 
-                        var Ev = when (conexionTrefp2.getDecimal(dato.substring(16, 18))) {
-                            1 -> "Evento 1: Apertura de Puerta"
-                            2 -> "Evento 2: Ciclo de Compresor"
-                            3 -> "Evento 3: Ciclo de Deshielo"
-                            4 -> "Evento 4: Falla de Energía"
-                            5 -> "Evento 5: Alarma"
-                            else -> "Evento desconocido"
-                        }
+                            var TipoEventR = dato.substring(16, 18)
 
-                        var Temp2R =
-                            conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(22, 26))
-                        var Temp1R =
-                            conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(18, 22))
+                            var Ev = when (conexionTrefp2.getDecimal(dato.substring(16, 18))) {
+                                1 -> "Evento 1: Apertura de Puerta"
+                                2 -> "Evento 2: Ciclo de Compresor"
+                                3 -> "Evento 3: Ciclo de Deshielo"
+                                4 -> "Evento 4: Falla de Energía"
+                                5 -> "Evento 5: Alarma"
+                                else -> "Evento desconocido"
+                            }
 
-                        val fila = sheet.createRow(filaNumEVENT++)
-                        colNumEVENT = 0
-                        val Iteración = fila.createCell(colNumEVENT++)
-                        Iteración.setCellValue(index.toString())
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Iteración.setCellStyle(
-                            styleceldaOscura
-                        ) else Iteración.setCellStyle(styleceldaClara)
+                            var Temp2R =
+                                conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(22, 26))
+                            var Temp1R =
+                                conexionTrefp2.ReturnValLoggerTraduccion(dato.substring(18, 22))
+
+                            val fila = sheet.createRow(filaNumEVENT++)
+                            colNumEVENT = 0
+                            val Iteración = fila.createCell(colNumEVENT++)
+                            Iteración.setCellValue(index.toString())
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Iteración.setCellStyle(
+                                styleceldaOscura
+                            ) else Iteración.setCellStyle(styleceldaClara)
 
 
-                        val TimeStamp = fila.createCell(colNumEVENT++)
-                        TimeStamp.setCellValue(
-                            conexionTrefp2.convertHexToHumanDateLogger(
-                                TimeStampStartR
+                            val TimeStamp = fila.createCell(colNumEVENT++)
+                            TimeStamp.setCellValue(
+                                conexionTrefp2.convertHexToHumanDateLogger(
+                                    TimeStampStartR
+                                )
                             )
-                        )
-                        if (estiloActual/*.equals(styleceldaOscura)*/) TimeStamp.setCellStyle(
-                            styleceldaOscura
-                        ) else TimeStamp.setCellStyle(styleceldaClara)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) TimeStamp.setCellStyle(
+                                styleceldaOscura
+                            ) else TimeStamp.setCellStyle(styleceldaClara)
 
 
-                        val TimeStampEnd = fila.createCell(colNumEVENT++)
-                        TimeStampEnd.setCellValue(
-                            conexionTrefp2.convertHexToHumanDateLogger(
-                                TimeStampEndR
+                            val TimeStampEnd = fila.createCell(colNumEVENT++)
+                            TimeStampEnd.setCellValue(
+                                conexionTrefp2.convertHexToHumanDateLogger(
+                                    TimeStampEndR
+                                )
                             )
-                        )
-                        if (estiloActual/*.equals(styleceldaOscura)*/) TimeStampEnd.setCellStyle(
-                            styleceldaOscura
-                        ) else TimeStampEnd.setCellStyle(styleceldaClara)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) TimeStampEnd.setCellStyle(
+                                styleceldaOscura
+                            ) else TimeStampEnd.setCellStyle(styleceldaClara)
 
-                        val Temp1 = fila.createCell(colNumEVENT++)
-                        Temp1.setCellValue(Temp1R)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Temp1.setCellStyle(
-                            styleceldaOscura
-                        ) else Temp1.setCellStyle(styleceldaClara)
+                            val Temp1 = fila.createCell(colNumEVENT++)
+                            Temp1.setCellValue(Temp1R)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Temp1.setCellStyle(
+                                styleceldaOscura
+                            ) else Temp1.setCellStyle(styleceldaClara)
 
-                        val Temp2 = fila.createCell(colNumEVENT++)
-                        Temp2.setCellValue(Temp2R)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Temp2.setCellStyle(
-                            styleceldaOscura
-                        ) else Temp2.setCellStyle(styleceldaClara)
+                            val Temp2 = fila.createCell(colNumEVENT++)
+                            Temp2.setCellValue(Temp2R)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Temp2.setCellStyle(
+                                styleceldaOscura
+                            ) else Temp2.setCellStyle(styleceldaClara)
 
 
-                        val voltaje = fila.createCell(colNumEVENT++)
-                        voltaje.setCellValue("${conexionTrefp2.getDecimal(voltajeR)}  Vca")  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) voltaje.setCellStyle(
-                            styleceldaOscura
-                        ) else voltaje.setCellStyle(styleceldaClara)
+                            val voltaje = fila.createCell(colNumEVENT++)
+                            if (dato.substring(16, 18).equals("02")) {
+                                val vol = conexionTrefp2.getDecimal(voltajeR)
+                                // Suponiendo que "val" es tu valor decimal
+                                val valorDecimal = BigDecimal(vol)
 
-                        val TipoEvent = fila.createCell(colNumEVENT++)
-                        TipoEvent.setCellValue(Ev)  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) TipoEvent.setCellStyle(
-                            styleceldaOscura
-                        ) else TipoEvent.setCellStyle(styleceldaClara)
+                                // Convertir a float
+                                val valorFloat = (valorDecimal).toFloat() / 100
+                                voltaje.setCellValue("${valorFloat}  KVA")
+                            } else voltaje.setCellValue("${conexionTrefp2.getDecimal(voltajeR)}  Vca")  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
+                            
+                            if (estiloActual/*.equals(styleceldaOscura)*/) voltaje.setCellStyle(
+                                styleceldaOscura
+                            ) else voltaje.setCellStyle(styleceldaClara)
 
-                        val Original = fila.createCell(colNumEVENT++)
-                        Original.setCellValue(dato)
-                        if (estiloActual/*.equals(styleceldaOscura)*/) Original.setCellStyle(
-                            styleceldaOscura
-                        ) else Original.setCellStyle(styleceldaClara)
+                            val TipoEvent = fila.createCell(colNumEVENT++)
 
-                        // estiloActual = false
-                        index++
-                        // Alternar entre estilos
-                        if (estiloActual) {
-                            Iteración.setCellStyle(styleceldaOscura)
-                        } else {
-                            Iteración.setCellStyle(styleceldaClara)
+                            TipoEvent.setCellValue(Ev)  //" + conexionTrefp.getDecimal(voltaje) + " Vca") //voltajeR)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) TipoEvent.setCellStyle(
+                                styleceldaOscura
+                            ) else TipoEvent.setCellStyle(styleceldaClara)
+
+                            val Original = fila.createCell(colNumEVENT++)
+                            Original.setCellValue(dato)
+                            if (estiloActual/*.equals(styleceldaOscura)*/) Original.setCellStyle(
+                                styleceldaOscura
+                            ) else Original.setCellStyle(styleceldaClara)
+
+                            // estiloActual = false
+                            index++
+                            // Alternar entre estilos
+                            if (estiloActual) {
+                                Iteración.setCellStyle(styleceldaOscura)
+                            } else {
+                                Iteración.setCellStyle(styleceldaClara)
+                            }
+                            estiloActual = !estiloActual
+
                         }
-                        estiloActual = !estiloActual
                     }
 
                     index = index + 5
@@ -2313,6 +2598,27 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                     Creador = fila.createCell(1)
                     Creador.setCellValue("Versión ImberaP:" + BuildConfig.VERSION_NAME)
                     Creador.setCellStyle(styleceldainfo)
+                }
+            }
+            "Datos Crudos"->{
+                var filaNumEVENT = 1
+                var estiloActual = true // Inicia con el estilo oscuro
+                var colNumEVENT = 0
+
+                if (data != null) {
+                    for (dato in data) {
+                        val fila = sheet.createRow(filaNumEVENT)
+
+
+                        val Iteración = fila.createCell(colNumEVENT)
+                        if (estiloActual/*.equals(styleceldaOscura)*/) Iteración.setCellStyle(
+                            styleceldaOscura
+                        ) else Iteración.setCellStyle(styleceldaClara)
+                        val voltaje = fila.createCell(colNumEVENT)
+                        voltaje.setCellValue(dato)
+                        colNumEVENT
+                        filaNumEVENT++
+                    }
                 }
             }
 
@@ -3313,6 +3619,9 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
 
     private val mLeScanCallback = BluetoothAdapter.LeScanCallback { device, _, _ ->
         runOnUiThread {
+            if (device.name != null) {
+                Log.d("ConexionBLE", "dispositivo -> ${device.name} ${device.address}")
+            }
             // Filtro de dispositivos TREFP
             if (device.name != null && (
                         device.name.contains("IMBERA-TREFP") ||
@@ -3321,7 +3630,12 @@ class MainActivity : AppCompatActivity(), ConexionTrefp.MyCallback {
                                 device.name.contains("IMBERA_RUTA_FRIA")
                                 ||
                                 device.name.contains("CEB_BA")
-                        ) && device.address != "00:E4:4C:00:92:5F" && device.address != "00:E4:4C:21:76:9C"
+                                ||
+                                device.name.contains("CEO_CONCO")
+                                ||
+                                device.name.contains("IMBERA-HEALTH")
+
+                        ) ///&& device.address != "00:E4:4C:00:92:5F" && device.address != "00:E4:4C:21:76:9C"
             ) {
                 // Agregar dispositivo a la lista
                 if (!listaDevices.any { it.mac == device.address }) {
