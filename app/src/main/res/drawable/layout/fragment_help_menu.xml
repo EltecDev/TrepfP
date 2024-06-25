@@ -1,0 +1,331 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="100dp"
+        android:focusable="auto"
+        android:focusableInTouchMode="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical|center"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/accountImageView"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginRight="9dp"
+                        android:layout_marginBottom="9dp"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/baseline_help_24" />
+
+                    <ImageView
+                        android:id="@+id/ivCloseHelpFragment"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="9dp"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/baseline_close_24" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/titleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="Atención a clientes:"
+                    android:textColor="#212121"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="Comunicación MODBUS"
+                    android:textColor="#212121"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:text="@string/customer_service_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="10dp"
+                    />
+
+                <TextView
+                    android:text="@string/customer_service_subtitle2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    />
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <Button
+                        android:id="@+id/btnWhatsappAyuda"
+                        android:layout_width="150dp"
+                        android:layout_height="42dp"
+                        android:layout_marginHorizontal="15dp"
+                        android:background="@drawable/round_corner_black"
+                        android:text="WhatsApp"
+                        android:textColor="#FFFFFF" />
+                    <Button
+                        android:id="@+id/btnCopiarNumeroAyuda"
+                        android:layout_width="150dp"
+                        android:layout_height="42dp"
+                        android:layout_marginHorizontal="15dp"
+                        android:background="@drawable/round_corner_black"
+                        android:text="Guardar contacto"
+                        android:textColor="#FFFFFF" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/idfalso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginRight="16dp"
+                android:text="Formulario de reporte por mail"
+                android:textColor="#212121"
+                android:textSize="20sp"
+                 />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/input_text_background">
+
+
+                <EditText
+                    android:id="@+id/etNombreAyuda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/colorTransparent"
+                    android:hint="Nombre completo"
+                    android:inputType="textAutoComplete"
+                    android:textColor="#424242"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/customer_service_advice_contact" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/input_text_background">
+
+                <EditText
+                    android:id="@+id/etCelularAyuda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/colorTransparent"
+                    android:hint="Celular"
+                    android:inputType="phone"
+                    android:textColor="#424242"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/customer_service_advice_firmware" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/input_text_background">
+
+                <EditText
+                    android:id="@+id/etfwVersionAyuda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/colorTransparent"
+                    android:hint="Version Firmware"
+                    android:inputType="phone"
+                    android:textColor="#424242"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="¿Entre qué hora y qué hora podemos llamarte?" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_text_background">
+
+                    <Spinner
+                        android:id="@+id/spinnerhrInicioAyuda"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_text_background">
+
+                    <Spinner
+                        android:id="@+id/spinnerhrFinalAyuda"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp" />
+                </RelativeLayout>
+
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="4dp"
+                android:text="Describa su problema (en el cuerpo del mail podrás agregar fotos o capturas de pantalla que son muy útiles):" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/input_text_background">
+
+                <EditText
+                    android:id="@+id/etcommentsAyuda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/colorTransparent"
+                    android:hint="Comentarios"
+                    android:inputType="textAutoCorrect|textMultiLine"
+                    android:maxLines="6"
+                    android:singleLine="false"
+                    android:textColor="#424242"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+
+            <Button
+                android:id="@+id/btnsendRequestAyuda"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/round_corner_black"
+                android:text="Enviar solicitud"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

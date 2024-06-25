@@ -1,362 +1,453 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/white_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <RelativeLayout
+            android:id="@+id/welcomeActivityBackgroundLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></RelativeLayout>
+
+    <RelativeLayout
+            android:id="@+id/topView"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:background="@color/white_background">
+
+        <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivlogo"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="0dp"
+                android:src="@drawable/logo" />
+
+        <TextView
+                android:visibility="gone"
+                android:id="@+id/tvRepareText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ivlogo"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="15dp"
+                android:textColor="@color/blue"
+                android:textStyle="italic|bold"
+                android:text="REPARE"
+                android:textSize="12sp" />
+
+        <TextView
+                android:id="@+id/tvappVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tvRepareText"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="15dp"
+                android:text=""
+                android:textSize="12sp" />
+
+        <TextView
+                android:id="@+id/tvUsuarioActual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tvappVersion"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="15dp"
+                android:text=""
+                android:textSize="12sp" />
 
 
-
-    <ImageView
-        android:id="@+id/conectar"
-        android:layout_width="52dp"
-        android:layout_height="44dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="30dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/Desconectar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scrollView2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/baseline_bluetooth_connected_24" />
-
-    <TextView
-        android:id="@+id/TextResultado"
-        android:layout_width="112dp"
-        android:layout_height="78dp"
-
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="10dp"
-        android:text=""
-        android:textColor="@color/purple_500"
-        app:layout_constraintEnd_toStartOf="@+id/TextResultado2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
-
-    <TextView
-        android:id="@+id/TextResultado2"
-        android:layout_width="95dp"
-        android:layout_height="65dp"
-
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="19dp"
-        android:text=""
-        android:textColor="@color/purple_500"
-        app:layout_constraintBottom_toTopOf="@+id/BTNOGETDGEO"
-        app:layout_constraintEnd_toStartOf="@+id/BTNOSENDGEO"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageView
-        android:id="@+id/Desconectar"
-        android:layout_width="52dp"
-        android:layout_height="44dp"
-
-        android:layout_marginTop="28dp"
-        app:layout_constraintEnd_toStartOf="@+id/Buscar"
-        app:layout_constraintHorizontal_bias="0.416"
-        app:layout_constraintStart_toEndOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/baseline_cancel_24" />
-
-    <ImageView
-        android:id="@+id/Buscar"
-        android:layout_width="52dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/baseline_search_24" />
-    <TextView
-            android:id="@+id/textViewVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="37dp"
-            android:paddingEnd="5dp"
-            android:text="Resultado"
-            android:textColor="@color/green_connection"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="220dp"
-        android:layout_height="192dp"
-        app:layout_constraintStart_toStartOf="parent"
-            android:paddingTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewVersion">
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvbleDevices"
-            android:layout_width="197dp"
-            android:layout_height="192dp"
-            android:layout_below="@id/tvsubtitulo"
-
-            />
-    </ScrollView>
-
-    <Spinner
-        android:id="@+id/spinnerMAC"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-            android:id="@+id/BtnWifi"
-            android:layout_width="69dp"
-            android:layout_height="47dp"
-            android:text="ObtenerWifi"
-            android:textSize="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/BtnSendWifi"
-            app:layout_constraintTop_toBottomOf="@+id/TextAltitud"
-            app:layout_constraintEnd_toStartOf="@+id/scrollView22"
-            app:layout_constraintStart_toStartOf="parent" />
-    <Button
-            android:id="@+id/BtnSendWifi"
-            android:layout_width="100dp"
-            android:layout_height="47dp"
-            android:text="sendWifiPrincipal"
-            android:textSize="10dp"
-            app:layout_constraintBottom_toTopOf="@id/BtnSendWifiSecundario"
-            app:layout_constraintTop_toBottomOf="@+id/BtnWifi"
-            app:layout_constraintEnd_toStartOf="@+id/scrollView22"
-            app:layout_constraintStart_toStartOf="parent" />
-    <Button
-            android:id="@+id/BtnSendWifiSecundario"
-            android:layout_width="100dp"
-            android:layout_height="47dp"
-            android:text="sendWifiSecundario"
-            android:textSize="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/BtnSendWifi"
-            app:layout_constraintEnd_toStartOf="@+id/scrollView22"
-            app:layout_constraintStart_toStartOf="parent" />
-    <ScrollView
-            android:id="@+id/scrollView22"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-
-            android:layout_marginBottom="16dp"
-            android:background="@color/white"
-            android:paddingTop="10sp"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.586"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/BTNOSENDHOUR">
-
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ReciclerResult"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+        <TextView
+                android:id="@+id/TextResultado"
+                android:layout_width="112dp"
+                android:layout_height="78dp"
+                android:layout_below="@+id/tvappVersion"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="10dp"
+                android:text=""
+                android:textColor="@color/purple_500"
 
                 />
 
 
-    </ScrollView>
+        <LinearLayout
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="15dp"
+                android:layout_below="@+id/tvUsuarioActual"
+                android:orientation="horizontal"
+                android:id="@+id/ivhelp"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp">
 
-    <Button
-        android:id="@+id/BTNReset"
-        android:layout_width="117dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="19dp"
-        android:layout_marginTop="8dp"
-        android:text="Reset\nMemory"
-        android:textSize="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/TextResultado2"
-        app:layout_constraintTop_toBottomOf="@+id/EstatusConectado" />
-
-    <ImageView
-        android:id="@+id/Event"
-        android:layout_width="52dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toEndOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/Desconectar"
-        app:srcCompat="@drawable/baseline_calendar_month_24" />
-
-    <ImageView
-        android:id="@+id/TIME"
-        android:layout_width="52dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.714"
-        app:layout_constraintStart_toEndOf="@+id/Event"
-        app:layout_constraintTop_toBottomOf="@+id/Buscar"
-        app:srcCompat="@drawable/baseline_timer_24" />
-
-    <Button
-        android:id="@+id/BTNGETTIME"
-        android:layout_width="93dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="19dp"
-        android:text="GETTIME"
-        android:textSize="10dp"
-        app:layout_constraintStart_toEndOf="@+id/BTNOGETDGEO"
-        app:layout_constraintTop_toBottomOf="@+id/TextResultado2" />
-
-    <Button
-        android:id="@+id/EstatusConectado"
-        android:layout_width="90dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="12dp"
-        android:text="conectado?"
-        android:textSize="8dp"
-            android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/scrollView2"
-        app:layout_constraintTop_toBottomOf="@+id/Event" />
-
-    <Button
-            android:id="@+id/BTNOGETDGEO"
-            android:layout_width="90dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-
-            android:text="GETDGEO"
-            android:textSize="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TextResultado" />
-
-    <Button
-        android:id="@+id/BTNERnviar"
-        android:layout_width="94dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="8dp"
-        android:text="Logger"
-        android:textSize="10dp"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.347"
-        app:layout_constraintStart_toStartOf="@+id/BTNReset"
-        app:layout_constraintTop_toBottomOf="@+id/BTNReset" />
-
-    <Button
-            android:id="@+id/BTNOSENDGEO"
-            android:layout_width="95dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="7dp"
-            android:text="SENDGEO"
-            android:textSize="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/BTNGETTIME"
-            app:layout_constraintTop_toBottomOf="@+id/BTNERnviar" />
-
-    <Button
-            android:id="@+id/BTNOSENDHOUR"
-            android:layout_width="69dp"
-            android:layout_height="47dp"
-            android:text="SENDHOUR"
-            android:textSize="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView22"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toBottomOf="@+id/BTNOSENDGEO"
-            app:layout_constraintHorizontal_bias="0.555" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="37dp"
-        android:paddingEnd="5dp"
-        android:text="Resultado"
-        android:textColor="@color/green_connection"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/scrollView2"
-       />
-
-    <TextView
-        android:id="@+id/T"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text=""
-        android:textColor="@color/green_connection"
-        app:layout_constraintBottom_toTopOf="@+id/Desconectar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.563"
-        app:layout_constraintStart_toEndOf="@id/scrollView2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.018" />
+        </LinearLayout>
 
 
-    <EditText
-        android:id="@+id/TextAltitud"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:paddingEnd="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView22"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BTNOGETDGEO" />
+        <TextView
+                android:id="@+id/tvconnectionstate0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="35dp"
+                android:text="Estado de conexión:"
+                android:textSize="12sp" />
+
+        <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivlockIconConnection"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/baseline_lock_24_gold" />
+
+        <TextView
+                android:id="@+id/tvconnectionstate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvconnectionstate0"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="35dp"
+                android:text=""
+                android:textSize="12sp" />
+
+        <TextView
+                android:id="@+id/tvfwversion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvconnectionstate"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="35dp"
+                android:text=""
+                android:textSize="12sp" />
+
+        <LinearLayout
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="15dp"
+                android:layout_below="@+id/tvfwversion"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+            <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/ivNoInternet"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/baseline_mobiledata_off_24" />
+
+            <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/ivNoUbicacion"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/baseline_location_off_24" />
+
+            <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/ivNoBluetooth"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/baseline_bluetooth_disabled_24" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:alpha="0.1"
+            android:layout_marginHorizontal="25dp"
+            android:id="@+id/line"
+            android:layout_below="@+id/topView"
+            android:background="@drawable/round_corner_black"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+
+    </RelativeLayout>
+
+    <FrameLayout
+            android:id="@+id/flFragmentHelpMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    <FrameLayout
+            android:layout_below="@+id/line"
+            android:layout_marginTop="3dp"
+            android:layout_marginHorizontal="20dp"
+            android:id="@+id/flFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <ScrollView
+                android:id="@+id/scrollView222"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_marginBottom="16dp"
+                android:background="@color/white"
+                android:paddingTop="10sp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.586"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
 
-    <EditText
-            android:id="@+id/Textlatitud"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:hint="latitud"
-            android:paddingStart="20dp"
-            android:text=""
-            app:layout_constraintBottom_toTopOf="@+id/scrollView22"
-            app:layout_constraintStart_toEndOf="@+id/TextAltitud"
-            app:layout_constraintTop_toBottomOf="@+id/BTNGETTIME" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="30dp"
+                        >
 
-    <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:text="Longitud"
-            app:layout_constraintBottom_toTopOf="@+id/TextAltitud"
-            app:layout_constraintEnd_toStartOf="@+id/Textlatitud"
-            app:layout_constraintStart_toStartOf="@+id/TextAltitud"
-            app:layout_constraintHorizontal_bias="0.644" />
+                    <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvbleDevices"
+                            android:layout_width="197dp"
+                            android:layout_height="292dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
 
-    <TextView
-        android:id="@+id/Latitud"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:text="Latitud"
-        app:layout_constraintBottom_toTopOf="@+id/Textlatitud"
-        app:layout_constraintEnd_toEndOf="@+id/Textlatitud"
-        app:layout_constraintStart_toStartOf="@+id/Textlatitud" />
+                            />
 
-    <ImageView
+                    <ImageView
+                            android:id="@+id/Desconectar"
+                            android:layout_width="52dp"
+                            android:layout_height="44dp"
+                            app:layout_constraintEnd_toStartOf="@+id/Buscar"
+                            app:srcCompat="@drawable/baseline_cancel_24"
+                            app:layout_constraintStart_toEndOf="@id/rvbleDevices"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-            android:layout_width="27dp"
-            android:layout_height="28dp"
-            app:srcCompat="@drawable/baseline_my_location_24"
-            android:id="@+id/imageView2"
-            android:layout_marginStart="28dp"
-            app:layout_constraintStart_toEndOf="@+id/Textlatitud"
-            android:layout_marginTop="19dp"
-            app:layout_constraintTop_toBottomOf="@+id/BTNOSENDGEO"
-            android:layout_marginBottom="33dp"
-            app:layout_constraintBottom_toTopOf="@+id/scrollView22" />
+                    <ImageView
+                            android:id="@+id/Buscar"
+                            android:layout_width="52dp"
+                            android:layout_height="44dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/Desconectar"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/baseline_search_24" />
+
+                    <ImageView
+
+                            android:layout_width="52dp"
+                            android:layout_height="44dp"
+                            app:srcCompat="@drawable/baseline_my_location_24"
+                            android:id="@+id/imageView2"
+
+                            app:layout_constraintTop_toBottomOf="@id/Desconectar"
+                            app:layout_constraintEnd_toStartOf="@id/BtnWifi"
+                            app:layout_constraintStart_toEndOf="@+id/rvbleDevices" />
+
+                    <ImageView
+                            android:id="@+id/BtnWifi"
+                            android:layout_width="52dp"
+                            android:layout_height="44dp"
+                            android:text="ObtenerWifi"
+                            android:textSize="10dp"
+                            android:src="@drawable/baseline_network_wifi_24"
+
+                            app:layout_constraintStart_toEndOf="@+id/imageView2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/Buscar" />
+
+                    <Button
+                            android:id="@+id/BTNReset"
+                            android:layout_width="90dp"
+                            android:layout_height="38dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Reset\nMemory"
+                            android:textSize="8dp"
+                            app:layout_constraintTop_toBottomOf="@id/imageView2"
+                            app:layout_constraintEnd_toEndOf="@id/BtnWifi"
+                            app:layout_constraintStart_toStartOf="@+id/imageView2" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <Button
+                            android:id="@+id/BTNGETTIME"
+                            android:layout_width="93dp"
+                            android:layout_height="35dp"
+                            android:text="GETTIME"
+                            android:textSize="10dp"
+                            app:layout_constraintEnd_toEndOf="@+id/BTNReset"
+                            app:layout_constraintStart_toStartOf="@+id/BTNReset"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNReset" />
+
+                    <Button
+                            android:id="@+id/BTNOGETDGEO"
+                            android:layout_width="90dp"
+                            android:layout_height="36dp"
+                            android:text="GETGEO"
+                            android:textSize="10dp"
+                            app:layout_constraintStart_toStartOf="@+id/BTNGETTIME"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNGETTIME"
+                            app:layout_constraintEnd_toEndOf="@+id/BTNGETTIME" />
+
+                    <Button
+                            android:id="@+id/BTNERnviar"
+                            android:layout_width="94dp"
+                            android:layout_height="32dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Logger"
+                            android:textSize="10dp"
+                            android:visibility="visible"
+                            app:layout_constraintHorizontal_bias="0.347"
+                            app:layout_constraintStart_toStartOf="@+id/BTNOGETDGEO"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNOGETDGEO"
+                            app:layout_constraintEnd_toEndOf="@+id/BTNOGETDGEO" />
+
+
+                    <Button
+                            android:id="@+id/BTNOSENDHOUR"
+                            android:layout_width="69dp"
+                            android:layout_height="47dp"
+                            android:text="SENDHOUR"
+                            android:textSize="10dp"
+                            app:layout_constraintHorizontal_bias="0.347"
+                            app:layout_constraintStart_toStartOf="@+id/BTNERnviar"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNERnviar"
+                            app:layout_constraintEnd_toEndOf="@+id/BTNERnviar"
+                            android:layout_marginBottom="30dp"
+                            />
+
+
+                    <Button
+                            android:id="@+id/Room"
+                            android:layout_width="85dp"
+                            android:layout_height="35dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_marginStart="7dp"
+                            android:text="Ro0om"
+                            android:textSize="10dp"
+                            app:layout_constraintHorizontal_bias="0.347"
+                            app:layout_constraintStart_toStartOf="@+id/BTNOSENDHOUR"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNOSENDHOUR"
+                            app:layout_constraintEnd_toEndOf="@+id/BTNOSENDHOUR"
+
+                            />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+
+                    <EditText
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/TextUsuario"
+                            android:hint="Usuario"
+                            android:textSize="16sp" />
+
+
+
+
+
+
+
+                    <EditText
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/TextPassword"
+                            android:hint="Password"
+                            android:textSize="16sp" />
+
+                    <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                        <Button
+                                android:id="@+id/BtnSendWifi"
+                                android:layout_width="100dp"
+                                android:layout_height="47dp"
+                                android:text="sendWifiPrincipal"
+                                android:textSize="10dp"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginBottom="10dp"
+                                />
+                        <Button
+                                android:id="@+id/BtnSendWifiSecundario"
+                                android:layout_width="100dp"
+                                android:layout_height="47dp"
+                                android:text="sendWifiSecundario"
+                                android:textSize="10dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/BtnSendWifi"
+                                app:layout_constraintEnd_toStartOf="@+id/scrollView22"
+                                app:layout_constraintStart_toStartOf="parent" />
+
+
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <EditText
+                            android:id="@+id/TextAltitud"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:paddingEnd="20dp"
+                            app:layout_constraintBottom_toTopOf="@+id/scrollView22"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNOGETDGEO" />
+
+
+                    <EditText
+                            android:id="@+id/Textlatitud"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:hint="latitud"
+                            android:paddingStart="20dp"
+                            android:text=""
+                            app:layout_constraintBottom_toTopOf="@+id/scrollView22"
+                            app:layout_constraintStart_toEndOf="@+id/TextAltitud"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNGETTIME" />
+
+                    <Button
+                            android:id="@+id/BTNOSENDGEO"
+                            android:layout_width="85dp"
+                            android:layout_height="35dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_marginStart="7dp"
+                            android:text="SENDGEO"
+                            android:textSize="10dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/BTNGETTIME"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNERnviar" />
+
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </ScrollView>
+
+
+    </FrameLayout>
+
+
+</RelativeLayout>

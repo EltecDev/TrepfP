@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_centerVertical="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivlogo"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="15dp"
+        android:text="Aquí se muestran las operaciones actuales posibles con el equipo CONCO"
+        android:textSize="15sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="55dp"
+                android:layout_marginVertical="15dp"
+                android:text="Actualmente tienes la versión más actual de Firmware instalada en el equipo"
+                android:textSize="18sp" />
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnparametros"
+                android:text="Cambiar parámetros"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwModbus001"
+                android:text="Actualizar a 0.01 Modbus"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwVoltaje002"
+                android:text="Actualizar a 0.02 Voltaje"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwCEO"
+                android:text="Actualizar a Firmware CEO"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwOld"
+                android:text="Actualizar a Firmware 0.02"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFw"
+                android:text="Actualizar a Firmware 0.08"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwOriginal"
+                android:text="Actualizar a Firmware 1.07"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnconfigurarWifi"
+                android:text="configurar Wi-fi"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnVerConfWifi"
+                android:text="Ver configuración Wi-fi"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

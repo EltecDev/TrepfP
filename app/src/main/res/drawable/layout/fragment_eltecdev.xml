@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_centerVertical="true"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivlogo"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="15dp"
+        android:textColor="@color/white"
+        android:text="Menú local de programación de equipos ELTEC"
+        android:textSize="15sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivlogo"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginVertical="15dp"
+                android:text="Aquí se muestran las operaciones actuales posibles con el equipo"
+                android:textSize="15sp" />
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwceo"
+                android:text="Actualizar a nuevo Firmware 1.08 CEO"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwcebin"
+                android:text="Actualizar a nuevo Firmware 1.09 CEBIN"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwOriginal"
+                android:text="Actualización de plantilla"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivlogo"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginVertical="15dp"
+                android:text="Aquí se muestran las operaciones actuales posibles con el equipo CEB_BA"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnlamparadev"
+                android:text="Lámpara"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnonoffdev"
+                android:text="On / Off"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnnocturnodev"
+                android:text="Nocturno"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivlogo"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginVertical="15dp"
+                android:text="Aquí se muestran las operaciones actuales posibles con el equipo CEO"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_gray"
+                android:textColor="#fff"
+                android:id="@+id/btnPruebaCargasdev"
+                android:text="Prueba de Cargas"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

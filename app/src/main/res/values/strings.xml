@@ -6,4 +6,16 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="bottom_menu_item1">Escán</string>
+    <string name="bottom_menu_item2">Plantilla</string>
+    <string name="bottom_menu_itemOxxo">Plantilla OXXO</string>
+    <string name="bottom_menu_item3">Operaciones</string>
+    <string name="bottom_menu_item5">Login</string>
+    <string name="bottom_menu_item4">Estatus</string>
+    <string name="bottom_menu_item6">ELTEC</string>
+    <string name="title_activity_principal">Principal</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
 </resources>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_centerVertical="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivlogo"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="15dp"
+        android:text="Aquí se muestran las operaciones actuales posibles con el equipo IMBERA-HEALTH"
+        android:textSize="15sp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="55dp"
+                android:layout_marginVertical="15dp"
+                android:text="Actualmente tienes la versión más actual de Firmware instalada en el equipo"
+                android:textSize="18sp" />
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwceb"
+                android:text="Actualizar a Firmware 0.17"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_white"
+                android:textColor="#000"
+                android:id="@+id/btnconfigurarWifiPrincipal"
+                android:text="configurar Wi-fi Principal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_white"
+                android:textColor="#000"
+                android:id="@+id/btnconfigurarWifiSecundario"
+                android:text="configurar Wi-fi Secundario"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateplantillaRGB"
+                android:text="SET RGB"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateplantillaBN"
+                android:text="Plantilla original"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateplantilla"
+                android:text="Actualizar plantilla default"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+            <Button
+                android:visibility="gone"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/round_corner_black"
+                android:textColor="#fff"
+                android:id="@+id/btnupdateFwOriginal"
+                android:text="Actualización a firmware 1.11"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

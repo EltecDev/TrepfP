@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/welcomeActivityBackgroundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/topView"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="@color/white_background">
+
+        <ImageView
+            android:id="@+id/ivlogo"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="0dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tvRepareText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/ivlogo"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="15dp"
+            android:textColor="@color/blue"
+            android:textStyle="italic|bold"
+            android:text="REPARE"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvappVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvRepareText"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="15dp"
+            android:text=""
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvUsuarioActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvappVersion"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="15dp"
+            android:text=""
+            android:textSize="12sp" />
+        <LinearLayout
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp"
+            android:layout_below="@+id/tvUsuarioActual"
+            android:orientation="horizontal"
+            android:id="@+id/ivhelp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp">
+            <ImageView
+                android:visibility="visible"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:src="@drawable/baseline_help_24" />
+            <TextView
+                android:gravity="center"
+                android:textSize="13sp"
+                android:text="Mandar mail de ayuda"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+
+
+
+
+        <TextView
+            android:id="@+id/tvconnectionstate0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="35dp"
+            android:text="Estado de conexión:"
+            android:textSize="12sp" />
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/ivlockIconConnection"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/baseline_lock_24_gold" />
+
+        <TextView
+            android:id="@+id/tvconnectionstate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvconnectionstate0"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="35dp"
+            android:text=""
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvfwversion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvconnectionstate"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="35dp"
+            android:text=""
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="15dp"
+            android:layout_below="@+id/tvfwversion"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivNoInternet"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/baseline_mobiledata_off_24" />
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivNoUbicacion"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/baseline_location_off_24" />
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivNoBluetooth"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/baseline_bluetooth_disabled_24" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:alpha="0.1"
+        android:layout_marginHorizontal="25dp"
+        android:id="@+id/line"
+        android:layout_below="@+id/topView"
+        android:background="@drawable/round_corner_black"
+        android:layout_width="match_parent"
+        android:layout_height="1dp">
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/flFragmentHelpMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:layout_below="@+id/line"
+        android:layout_marginTop="3dp"
+        android:layout_marginHorizontal="20dp"
+        android:id="@+id/flFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginVertical="15dp"
+        android:background="@drawable/round_corner_white"
+        app:itemIconSize="18dp"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:menu="@menu/bottom_navigation_menu" />
+
+
+</RelativeLayout>

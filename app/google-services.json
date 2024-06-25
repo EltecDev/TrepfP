@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "478277975235",
+    "firebase_url": "https://solkoslp.firebaseio.com",
+    "project_id": "solkoslp",
+    "storage_bucket": "solkoslp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478277975235:android:52adb5c566632435407676",
+        "android_client_info": {
+          "package_name": "mx.eltec.cooleltec"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478277975235-mkg42eos7q9o3lpcmj2hdcjrft5qpusq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4U61RP5zvrLW-A_VfBMRigWnc8Ygke8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478277975235-mkg42eos7q9o3lpcmj2hdcjrft5qpusq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478277975235:android:f00fe97c81274664407676",
+        "android_client_info": {
+          "package_name": "com.example.trepfp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478277975235-mkg42eos7q9o3lpcmj2hdcjrft5qpusq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4U61RP5zvrLW-A_VfBMRigWnc8Ygke8U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478277975235-mkg42eos7q9o3lpcmj2hdcjrft5qpusq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+
+  "configuration_version": "1"
+}

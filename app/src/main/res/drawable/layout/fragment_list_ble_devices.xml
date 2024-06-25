@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_list_BLE_devices"
+    android:background="@color/white_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginVertical="5dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Lista de dispositivos"
+        android:textColor="@color/blue"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/tvsubtitulo"
+        android:layout_below="@id/tvtitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:text="Aquí se muestran los dispositivos encontrados mediante el escaneo Bluetooth, procura no superar los 4 metros de distancia."
+        android:textSize="15sp" />
+
+    <RelativeLayout
+        android:layout_below="@+id/tvsubtitulo"
+        android:id="@+id/testos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_alignParentStart="true"
+            android:id="@+id/tvescan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="Lista actualizada"
+            android:layout_marginEnd="50dp"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+        <ProgressBar
+            android:layout_alignParentEnd="true"
+            android:id="@+id/progressBarScan"
+            android:layout_marginEnd="30dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:indeterminate="true"
+            android:layout_centerVertical="true"
+            style="?android:attr/progressBarStyleLargeInverse"
+            />
+    </RelativeLayout>
+
+
+
+
+    <TextView
+        android:visibility="visible"
+        android:layout_below="@+id/testos"
+        android:id="@+id/tvMensajeListaVacia"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginTop="100dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:text="No se encontraron dispositivos, intenta escanear de nuevo\n\nNota:Los  escaneos constantes pueden empeorar los resultados, espera unos segundos y reinicia tu Bluetooth de ser necesario"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
+        android:id="@+id/rvbleDevices"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/testos"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="100dp" />
+
+    <Button
+        android:id="@+id/btnDesconect"
+        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="15dp"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/round_corner_white"
+        android:text="Desconectar"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="13sp" />
+
+    <Button
+        android:layout_marginHorizontal="15dp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/btnEscanear"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/round_corner_black"
+        android:text="Escanear"
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="13sp" />
+
+</RelativeLayout>

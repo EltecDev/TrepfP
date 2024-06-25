@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/AlexaWelcomeLayout"
+    android:layout_margin="30dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/round_corner_white">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_marginTop="25dp"
+            android:id="@+id/adviceCELayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTituloPopupOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="24dp"
+                android:fontFamily="sans-serif-light"
+                android:text='Configuración WI-FI'
+                android:textColor="#212121"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tvSubtituloPopupOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="6dp"
+                android:textSize="15sp"
+                android:text='Envía tus credenciales Wi-Fi' />
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="6dp"
+                android:textSize="15sp"
+                android:text='SSID Principal' />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/etSSID1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="SSID Principal"
+                android:inputType="" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/etWifiPass1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña"
+                android:inputType="" />
+
+
+            <TextView
+                android:id="@+id/tvinfossid1"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="6dp"
+                android:textSize="15sp"
+                android:text='' />
+
+            <Button
+                android:id="@+id/btnSendWifi"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/round_corner_black"
+                android:gravity="center"
+                android:text="Enviar datos"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/btndontSendwifi"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/round_corner_white"
+                android:gravity="center"
+                android:text="Cancelar"
+                android:textColor="#000000" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

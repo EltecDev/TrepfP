@@ -1,0 +1,1983 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white_background"
+    android:id="@+id/fragment_list_BLE_devices"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/tvtituloPlantillaOxxo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Aquí puedes editar plantillas y mandarlas como parámetros a tu dispositivo CONCO"
+        android:textSize="15sp" />
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:alpha="0.2"
+        android:background="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <ScrollView
+        android:id="@+id/scrollPlantillaOxxo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/layoutButtons"
+        android:layout_below="@+id/tvtituloPlantillaOxxo"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:visibility="visible"
+                android:id="@+id/tvSubtituloPlantillaOxxo"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Puedes seleccionar una plantilla desde aquí, CUIDADO al seleccionarla se eliminarán los datos que están actualmente en los campos de edición. " />
+
+            <Spinner
+                android:visibility="visible"
+                android:layout_marginTop="10dp"
+                android:id="@+id/spinnerGetPlantillaRemoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:visibility="visible"
+                android:layout_marginTop="10dp"
+                android:id="@+id/btnDownloadPlantillas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_gray"
+                android:text="Descargar plantillas disponibles"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                android:textSize="14sp" />
+
+            <!--
+             Datos de COMPRESOR
+             -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T0.- [SPMN] Set Point corte modo normal: Temperatura (°C) en sensor INTERNO de apagado de compresor."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoSetpointDiurno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoSetpointDiurno"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890.-"
+                android:hint="T6 a T7"
+                android:inputType="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T1.- [DAMN] Diferencial de arranque modo normal: Valor a sumar (siempre es positivo) al set point para encendido de compresor en °C (T encendido de compresor = SPMN + DAMN)."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoDiferencialDiurno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoDiferencialDiurno"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.0 a 9.9"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T2.- [DISPLAY] Offset de temperatura de display en °C: Valor a sumar (+) o Restar (-) al mensaje de temperatura (según sensor seleccionado para despliegue); únicamente visual en el display remoto."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoOffsetDiurno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoOffsetDiurno"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890.-"
+                android:hint="-9.9 a 9.9"
+                android:inputType="" />
+
+
+            <!--
+             Datos de TERMOSTADO
+             -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T6.- [DISPLAY] Temperatura (°C) mínima de ajuste permitido del set point en modo normal cuando se modifica con el teclado del display remoto."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoLimiteInferiorAjusteSetPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoLimiteInferiorAjusteSetPoint"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-35 a 40" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T7.- [DISPLAY] Temperatura (°C) máxima de ajuste permitido de set point en modo normal cuando se modifica con el teclado del display remoto."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActLimiteSuperiorAjusteSetPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActLimiteSuperiorAjusteSetPoint"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-35 a 40" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="T9.- [DESHIELO] Temperatura (°C) en sensor INTERNO debajo de la cual inicia el contador de tiempo entre deshielos; arriba de esta temperatura se reinicia el contador al valor L4."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvTemperaturaDeReinicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTemperaturaDeReinicio"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="TA.- [DESHIELO FORZADO] Temperatura (°C) en sensor EVAPORADOR para iniciar un evento de deshielo forzado."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvTemperaturaParaIniciarDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTemperaturaParaIniciarDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="TD.- [AHORRO] Diferencial ES1: Valor a sumar (siempre es positivo) al set point del modo normal SPMN cuando se cumple el tiempo FD"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoDiferencialTempParaAhorro1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoDiferencialTempParaAhorro1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="-0.0 a 10"
+                android:inputType="numberDecimal" />
+
+            <!--
+             Datos de PUERTA
+             -->
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="TE.- [AHORRO] Diferencial ES2: Valor a sumar (siempre es positivo) al set point generador en el modo ahorro 1 cuando se cumple el tiempo FE"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoDiferencialTempParaAhorro2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoDiferencialTempParaAhorro2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.0 a 10"
+                android:inputType="numberSigned" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A0.- [DESHIELO] Temperatura (°C) en sensor EVAPORADOR para abortar un evento de deshielo que este en curso. La temperatura en el sensor ambiente debe ser igual o mayor."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoTemperaturaEvaporadorTerminarDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoTemperaturaEvaporadorTerminarDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A1.- [DESHIELO] Temperatura (°C) en sensor INTERNO para abortar un evento de deshielo que este en curso. La temperatura en el sensor evaporador debe ser igual o mayor."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoTemperaturaAmbienteTerminarDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoTemperaturaAmbienteTerminarDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A4.- [AHORRO] Temperatura (°C) en sensor INTERNO para desactivar MODOS DE AHORRO."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoTemperaturaPulldown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoTemperaturaPulldown"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="-99 a 99" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A6.- [ALARMA tA] Temperatura (°C) en sensor INTERNO para alarma de temperatura alta tA: Si la temperatura es igual o mayor se desplegará la alarma TA"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoAlarmaTemperaturaAlta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rango de (T0+T1+1.0) a (T7+15.0)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoAlarmaTemperaturaAlta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="Rango de (T0+T1+1.0) a (T7+15.0)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A7.- [ALARMA tb/F] Temperatura (°C) en sensor INTERNO para alarma de temperatura baja tb: Si la temperatura es igual o menor se desplegará la alarma tb en display."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoAlarmaTemperaturaBaja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rango de (T6-15.0) a (T0-1.0)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoAlarmaTemperaturaBaja"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890-."
+                android:hint="Rango de (T6-15.0) a (T0-1.0)" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A8.- [ALARMAS t] Histéresis para cancelar alarmas: Valor a sumar a la temperatura de alarma tb o a restar a la temperatura de alarma tA para cancelar alarmas."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoDiferencialParaAlarmasTemperatura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoDiferencialParaAlarmasTemperatura"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.5 a 10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="A9.- [ALARMA DEFICIENCIA] Diferencial de temperaturas en °C al arranque del compresor y transcurrido el tiempo LB para alarmar de deficiencia (asociado a LB)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvDiferencialDeTemperaturaParaAlarmaDeDeficiencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDiferencialDeTemperaturaParaAlarmaDeDeficiencia"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890."
+                android:hint="0.5 a 10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="AA.- [AHORRO HORARIO] Horario para entrar a modo de ahorro 2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvAA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAA"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890:"
+                android:hint="0 a 0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="AB.- [AHORRO HORARIO] Horario para salir de modo de ahorro 2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual en TREFP : " />
+
+            <TextView
+                android:id="@+id/tvAB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 a 0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo para TREFP : " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAB"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:digits="1234567890:"
+                android:hint="0.5 a 10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L0.- [ALARMA Y PROTECCION DE VOLTAJE -U] Voltaje para alarma de bajo voltaje -U si C5=1: Si el voltaje de alimentación es igual o menor y C5 = 1 el equipo entrara en protección de voltaje con la alarma -U."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvActOxxoVoltajeProteccionMinimo120"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etActOxxoVoltajeProteccionMinimo120"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L1.-[ALARMA Y PROTECCION DE VOLTAJE U o -U] Con C5=1, Voltaje para alarma de alto voltaje U y con C5=2, Voltaje para alarma de bajo voltaje -U"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/tvOxxoVoltajeProteccionMaximo120minimo220"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etOxxoVoltajeProteccionMaximo120minimo220"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="00 a 99"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L2.- [ALARMA Y PROTECCION DE VOLTAJE U] Voltaje para alarma de alto voltaje U si C5=2: Si el voltaje de alimentación es igual o mayor y C5 = 2 el equipo entrara en protección de voltaje con la alarma U."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/tvOxxoVoltajeProteccionMaximo220"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etOxxoVoltajeProteccionMaximo220"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:hint="00 a 50"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L3.- [ALARMA Y PROTECCION DE VOLTAJE] Tiempo (segundos) que debe permanecer sin interrupcion la condición L0, L1 o L2 para activar la protección de voltaje y la alarma correspondiente."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoValidarFallaVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoValidarFallaVoltaje"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L4.- [DESHIELO] Tiempo (horas) entre deshielos, despues de cumplida la condicion T9 (tambien relacionado a C4)."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoEntreDeshielos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoEntreDeshielos"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L5.- [DESHIELO] Tiempo (minutos) de duración de deshielo."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoMaximoDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoMaximoDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="L6.- [ALARMA P] Tiempo (minutos) de deteccion de interruptor de puerta dañado para ignorar switch de puerta en control de ventilador (inicia cuenta después de L7)."
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoPuertaAbiertaControlVentiladorPorPuerta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoPuertaAbiertaControlVentiladorPorPuerta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='L7.- [ALARMA P] Tiempo (minutos) a transcurrir para mostrar en el display "P" (alarma de puerta abierta P)'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoValidacionAlarmaPuertaAbierta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoValidacionAlarmaPuertaAbierta"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='L9.- [MODO NOCTURNO] Tiempo (minutos) de duración de cargas apagadas y mensaje "n" en el display'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoPermanenciaModoNocturno"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoPermanenciaModoNocturno"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="LA.- [DISPLAY] Tiempo (minutos) de mensaje de temperatura congelado en el display después de deshielo"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvTiempoBloqueoDisplayDespuesDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTiempoBloqueoDisplayDespuesDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="LB.- [ALARMA DEFICIENCIA] Tiempo en minutos de compresor encendido para mediciones de deficiencia (asociado a A9)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvTiempoCompresorEncendidoParaMedicionesDeficiencia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTiempoCompresorEncendidoParaMedicionesDeficiencia"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="LE.- [DATALOGGER] Tiempo para registrar puerta abierta (segundos)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvLE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLE"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="LF.- [DATALOGGER] Tiempo (minutos) entre adquisición de datos tipo tiempo para el datalogger"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvLF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLF"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="00 a 99"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C0.- [DISPLAY] Unidad de temperatura a mostrar sobre el display °C / °F (0 para °C y 32 para °F)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Dato nuevo: " />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Celcius" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoEscalaTemperatura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fahrenheit" />
+            </LinearLayout>
+            <!-- -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C1.- Banderas de configuración"
+                android:textStyle="bold" />
+
+            <TextView
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Entrada a modo ahorrador" />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solo por botón" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoModoAhorrador"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Por botón y puerta" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="b1. [DESHIELO] Deshielo al arranque" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoOnOffdeshielo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Si" />
+            </LinearLayout>
+
+            <TextView
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Pull Down" />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Deshabilitado" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoPullDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Habilitado" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="b3. [PUERTA] Interruptor de puerta" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normalmente cerrado" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoSwitchPuerta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normalmente abierto" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="b5. [AHORRO] Iluminación encendida en MODO AHORRO 2" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchC1b5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Si" />
+            </LinearLayout>
+
+            <TextView
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Set abreviado de parámetros" />
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No visible" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchOxxoSetAbreviadoParametros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:checked="false"
+                    android:text="" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Visible" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C2.- [DISPLAY] Intensidad de filtro digital del sensor cuando la temperatura aumenta"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoIntensidadFiltroParaSensorAmbienteALaSubida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoIntensidadFiltroParaSensorAmbienteALaSubida"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 09"
+                android:inputType="number" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C3.- [DESHIELO] Tipo de deshielo (por ventilador)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <Spinner
+                android:id="@+id/spinnerOxxoModosdeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C4.- [DESHIELO] Tiempo adaptativo de deshielo del 0 al 8, 0 es sin adaptativo, 8 es todo adaptativo"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoAdaptivoDeshielo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoAdaptivoDeshielo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 08"
+                android:inputType="number" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C5.- [ALARMA VOLTAJE] Protección de voltaje ACTIVADA a 120V (valor 1), ACTIVADA a 220V (valor 2) o DESACTIVADA (valor 0)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <Spinner
+                android:id="@+id/spinnerOxxoProteccionVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C7.- [HARDWARE]  Número de sensores de temperatura del sistema (de 1 a 4)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <Spinner
+                android:id="@+id/spinnerOxxoNumeroSensores"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="C8.- [DISPLAY] Tiempo en segundos entre el despliegue de alarmas y fallas en el display (de 0 a 99 segundos, 0=a visible todo el tiempo)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <Spinner
+                android:id="@+id/spinnerNivelesTiempoMostrarFallas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="F0.- [ALARMA VOLTAJE] Histéresis para la protección de voltaje (Volts); n.m donde n es para salir de U y m para salir de -U"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoHisteresisParaProteccionVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoHisteresisParaProteccionVoltaje"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 9.9"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="F1.- [ALARMA VOLTAJE] Tiempo (minutos) de validación para salir de falla de voltaje "
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoValidacionSalirFallaVoltaje"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoValidacionSalirFallaVoltaje"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="F2.- [DESHIELO] Tiempo de goteo (minutos) despues de concluido un Deshielo, n.m donde n es apagado forzoso de compresor y m es apagado forzoso del ventilador"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoGoteo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoGoteo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="F3.- [COMPRESOR] Tiempo (minutos) de descanso mínimo del compresor"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+
+            <TextView
+                android:id="@+id/tvOxxoTiempoDescansoMinimoCompresor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoDescansoMinimoCompresor"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F4.- [COMPRESOR] Tiempo (horas) máximo de compresor encendido continuo"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxotiempoMaximoCompresorEncendido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etOxxotiempoMaximoCompresorEncendido"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F5.- Tiempo de descanso compresor cuando se cumple F4 (horas)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxoTiempoDescansoCompresorCumpleF4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etOxxoTiempoDescansoCompresorCumpleF4"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F6.- [VENTILADOR] Ciclos de encendido y apagado del ventilador cuando no esta encendido el compresor; n.m donde n son minutos de enceendido y m son minutos de apagado"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxoTiempoEncendidoApagadoDeVentilador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etOxxoTiempoEncendidoApagadoDeVentilador"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25" />
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="F9.- [ANTIVAO] Tiempo (minutos) de resistencia de Antivao encendida al terminar FA"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvF9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etF9"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="1 a 240" />
+
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FA.- [ANTIVAO] Tiempo (minutos) de resistencia de Antivao apagada al terminar F9"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvFA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="numberDecimal"
+                android:id="@+id/etFA"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="1 a 240" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="FD.- [AHORRO] Tiempo de puerta cerrada para entrar a modo Ahorro 1 (horas)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxoTiempoPuertaCerradaEntrarModoAhorro1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoPuertaCerradaEntrarModoAhorro1"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="FE.- [AHORRO] Tiempo de puerta cerrada adicional a FD para entrar a modo Ahorro 2 (horas)"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxoTiempoPuertaCerradaEntrarModoAhorro2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoTiempoPuertaCerradaEntrarModoAhorro2"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0 a 25"
+                android:inputType="numberDecimal" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="D1.- [DISPLAY] Password  para modo TECNICO"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato actual: " />
+            <TextView
+                android:id="@+id/tvOxxoPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoPassword"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:hint="0 a 99"
+                android:inputType="numberDecimal" />
+
+            <!--Datos finales de versiones de firmware/Software -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="E3.- [ID]Versión de la plantilla"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etOxxoNewPlantillaversion"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='E1 E2.- [ID]Versión Firmware Actual (ejemplo: "1.01" , "1.0" , "1.50")'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etOxxoactualFirmwareVersion"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D3.- [ID]Cliente final'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etd3ClienteFinal"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D4.- [ID]Cliente Eltec'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etD4clienteEltec"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D5.- [ID]Versión de Hardware'
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etd5versionHardware"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D6.- [ID]Modelo de TREFP '
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etd6Modelo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text='D7.- [ID]Modelo de TREFP '
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dato nuevo: " />
+            <com.google.android.material.textfield.TextInputEditText
+                android:enabled="false"
+                android:id="@+id/etd7Modelo"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                 />
+
+            <LinearLayout
+
+                android:layout_marginBottom="10dp"
+                android:id="@+id/layoutButtonsGetCrudo"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:visibility="visible"
+                    android:id="@+id/btnSendInfoCrudo"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Act plantilla Conco"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:layout_marginHorizontal="10dp"
+                    android:id="@+id/btnSendPlantillaObtenida"
+                    android:layout_width="150dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/round_corner_white"
+                    android:text="Excel de plantilla"
+                    android:textAlignment="center"
+                    android:textColor="#000"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/layoutButtons"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+
+            android:id="@+id/btnSendPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Enviar plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:visibility="gone"
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnSendPlantillaOperador"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Act plantilla Conco"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnGetPlantilla"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Obtener plantilla"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:visibility="gone"
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnSendFwOperador"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Actualizar Firmware"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/btnSendPlantillaFwTecnico"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:background="@drawable/round_corner_black"
+            android:text="Actualizar CEO"
+            android:textAlignment="center"
+            android:textColor="#FFF"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</RelativeLayout>
