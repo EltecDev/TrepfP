@@ -38,7 +38,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.*
 import mx.eltec.BluetoothServices.BluetoothLeService
-import mx.eltec.imberatrefp.R
+
 import java.lang.Long.toHexString
 import java.math.BigInteger
 import java.sql.Connection
@@ -55,6 +55,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
 import androidx.lifecycle.lifecycleScope
+import com.example.trepfp.R
 
 class ConexionTrefp(
     context: Context, tvconnectionState: TextView?,
@@ -17058,6 +17059,260 @@ class ConexionTrefp(
         return ""
     }
 
+     inner class MyAsyncTaskUpdateFirmwareFInal(
+        FWWW1: String,
+        private val callback: MyCallback
+    ) :
+        AsyncTask<Int?, Int?, String>() {
+        var FWWW = FWWW1
+        var error = false
+        var textError = ""
+        override fun onPostExecute(result: String) {
+
+        }
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        override fun doInBackground(vararg params: Int?): String {
+            var divFirmware = dividirNewFirmware(FWWW.replace(" ","").replace("\n", ""))
+            if (GetStatusBle()) {
+                if (divFirmware) {
+                    bluetoothServices.bluetoothLeService!!.clearListLogger()
+                    bluetoothServices.bluetoothLeService?.listData?.clear()
+                    bluetoothServices.bluetoothLeService!!.sendComando("4046")
+                    Thread.sleep(800)
+                    listData = getInfoList() as MutableList<String?>
+                    Log.d(
+                        "firmwarePASOS",
+                        "firmware corrutina1 handshake listData $listData  infolist ${getInfoList()} "
+                    )
+                } else {
+                    error = true
+                    textError = "Firmware incorrecto"
+                }
+
+                callback.onProgress("Realizando")
+                Log.d(
+                    "firmwarePASOS",
+                    "Realizando GetStatusBle  ${GetStatusBle()} divFirmware $divFirmware  listData $listData"
+                )
+
+                    if (divFirmware) {
+                        if (containsPair(listData!!, "F1", "03")) {
+                            Log.d("firmwarePASOS", "2251")
+
+                            bluetoothServices.bluetoothLeService!!.clearListLogger()
+                            bluetoothServices.bluetoothLeService?.listData?.clear()
+
+                            Thread.sleep(200)
+                            Log.d("firmwarePASOS", "Despues de limpiar")
+                            bluetoothServices.bluetoothLeService!!.sendFirstComando(
+                                "4049" + Integer.toHexString(
+                                    FinalFirmwareCommands.size
+                                )
+                            )
+                            Log.d(
+                                "firmwarePASOS",
+                                "se mando el comando 4049  ${
+                                    Integer.toHexString(
+                                        FinalFirmwareCommands.size
+                                    )
+                                }"
+                            )
+                            Thread.sleep(300)
+                            Log.d(
+                                "firmwarePASOS", "se espera 800"
+                            )
+                            listData = getInfoList() as MutableList<String?>
+                            Log.d(
+                                "firmwarePASOS",
+                                "listData ${getInfoList()} listData $listData"
+                            )
+                            //  val result = executeFirmwareUpdate()
+                            /*
+                                                        var i = 0
+                                                        while (i < FinalFirmwareCommands.size) {
+                                                            bluetoothServices.bluetoothLeService!!.clearListLogger()
+
+                                                            bluetoothServices.bluetoothLeService?.listData?.clear()
+
+                                                            Log.d("DatoEnviadoafirmware"," i  $i  ${ FinalFirmwareCommands[i]} ")
+
+                                                            bluetoothServices.bluetoothLeService!!.sendComando("4021"
+                            //                                    FinalFirmwareCommands[i],
+                            //                                    ""
+                                                            )
+
+
+
+                                                            delay(1000)
+                                                            listData = getInfoList() as MutableList<String?>
+
+
+                                                            Log.d(
+                                                                "firmwarePASOS",
+                                                                "newListData $i ${listData.toString().trim().uppercase()}"
+                                                            )
+
+                                                            /*
+                                                             if (!containsPair(listData!!, "F1", "3D")) {
+                                                                 Log.d(
+                                                                     "firmwarePASOS",
+                                                                     "cancel 17635 listData $listData")
+                                                                 return "cancel"
+                                                             }
+
+                                                             if (i + 1 == FinalFirmwareCommands.size) {
+                                                                 bluetoothServices.bluetoothLeService!!.clearListLogger()
+
+                                                                 bluetoothServices.bluetoothLeService?.listData?.clear()
+                                                                 val finalChecksum = Integer.toHexString(checksumTotal).padStart(8, '0')
+                                                                 bluetoothServices.bluetoothLeService!!.sendComando("404A$finalChecksum")
+                                                                 delay(150)
+
+                                                                 val finalResponse =  bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String>
+                                                                   //  bluetoothServices.bluetoothLeService!!.listData // conexionTrefp.getInfoList()
+
+
+                                                                 //  bluetoothLeService!!.getDataFromBroadcastUpdate() as MutableList<String>
+                                                                 val finalListResponse = GetRealDataFromHexaImbera.convert(
+                                                                     finalResponse as List<String>,
+                                                                     "Actualizar a Firmware Personalizado",
+                                                                     sp!!.getString("numversion", "")!!,
+                                                                     sp!!.getString("modelo", "")!!
+                                                                 ).toMutableList()
+
+                                                                 Log.d("firmwarePASOS","finalListResponse $finalListResponse")
+                                                                 return if (finalListResponse.isEmpty() || finalListResponse[0].trim()
+                                                                         .replace(" ", "")
+                                                                         .uppercase() != "F13D"
+                                                                 ) {
+                                                                     "cancelFialChecksumError"
+                                                                 } else {
+                                                                     "correct"
+                                                                 }
+                                                             }
+                                                             */
+                                                            i++
+                                                        }
+                            */
+                            var result = ""
+                            var i = 0
+                            while (i < FinalFirmwareCommands.size) {
+                                bluetoothLeService!!.sendComando(FinalFirmwareCommands[i], "")
+                                try {
+                                    Thread.sleep(150)
+                                    listData!!.clear()
+                                    listData = bluetoothLeService!!.dataFromBroadcastUpdate  as MutableList<String?> //getDataFromBroadcastUpdate()
+                                    FinalListData.clear()
+                                    FinalListData = GetRealDataFromHexaImbera.convert(listData as List<String>, titulo,"","" ) as MutableList<String?>
+                                    if (FinalListData.isEmpty()) {
+                                        Thread.sleep(500)
+                                        listData!!.clear()
+                                        listData = bluetoothLeService!!.dataFromBroadcastUpdate as MutableList<String?> //getDataFromBroadcastUpdate()
+                                        FinalListData.clear()
+                                        FinalListData = GetRealDataFromHexaImbera.convert(listData as List<String>, titulo , "","") as MutableList<String?>
+                                        if (FinalListData.isEmpty()) {
+                                            result = "cancel"
+                                        } else {
+                                            if (FinalListData[0] == "F13D") { //comando de confirmaciòn de actualizacion de firmware desde el trefpb
+                                                if (i + 1 == FinalFirmwareCommands.size) {
+                                                    //AL finalizar los paquetes se envia comando de temrinacion + checksum total
+                                                    val c = Integer.toHexString(checksumTotal)
+                                                    var finalchecksum = ""
+                                                    finalchecksum =
+                                                        if (c.length == 1) "0000000$c" else if (c.length == 2) "000000$c" else if (c.length == 3) "00000$c" else if (c.length == 4) "0000$c" else if (c.length == 5) "000$c" else if (c.length == 6) "00$c" else if (c.length == 7) "0$c" else c
+                                                    bluetoothLeService!!.sendComando("404A$finalchecksum")
+                                                    //revision de la ultima respuesta del trefp despues del checksum
+                                                    Thread.sleep(150)
+                                                    listData!!.clear()
+                                                    listData = bluetoothLeService!!.dataFromBroadcastUpdate as MutableList<String?>//  getDataFromBroadcastUpdate()
+                                                    FinalListData.clear()
+                                                    FinalListData =
+                                                        GetRealDataFromHexaImbera.convert(listData as List<String>, titulo , "","") as MutableList<String?>
+                                                    result =  if (FinalListData.isEmpty()) {
+                                                        "cancel"
+                                                    } else {
+                                                        if (FinalListData[0] == "F13D") {
+                                                            "correct"
+                                                        } else "cancelFialChecksumError"
+                                                    }
+                                                }
+                                            } else {
+                                                i = FinalFirmwareCommands.size
+                                            }
+                                        }
+                                    } else {
+                                        if (FinalListData[0] == "F13D") { //comando de confirmaciòn de actualizacion de firmware desde el trefpb
+                                            if (i + 1 == FinalFirmwareCommands.size) {
+                                                //AL finalizar los paquetes se envia comando de temrinacion + checksum total
+                                                val c = Integer.toHexString(checksumTotal)
+                                                var finalchecksum = ""
+                                                finalchecksum =
+                                                    if (c.length == 1) "0000000$c" else if (c.length == 2) "000000$c" else if (c.length == 3) "00000$c" else if (c.length == 4) "0000$c" else if (c.length == 5) "000$c" else if (c.length == 6) "00$c" else if (c.length == 7) "0$c" else c
+                                                bluetoothLeService!!.sendComando("404A$finalchecksum")
+                                                //revision de la ultima respuesta del trefp despues del checksum
+                                                Thread.sleep(150)
+                                                listData!!.clear()
+                                                listData = bluetoothLeService!!.dataFromBroadcastUpdate as MutableList<String?>//   getDataFromBroadcastUpdate()
+                                                FinalListData.clear()
+                                                FinalListData =
+                                                    GetRealDataFromHexaImbera.convert(listData as List<String>, titulo ,"","") as MutableList<String?>
+                                                result = if (FinalListData.isEmpty()) {
+                                                    "cancel"
+                                                } else {
+                                                    if (FinalListData[0] == "F13D") {
+                                                        "correct"
+                                                    } else "cancelFialChecksumError"
+                                                }
+                                            }
+                                        } else {
+                                            i = FinalFirmwareCommands.size
+                                        }
+                                    }
+                                } catch (e: InterruptedException) {
+                                    e.printStackTrace()
+                                }
+                                i++
+                            }
+
+
+                            when (result) {
+                                "correct" -> {
+                                    callback.onSuccess(true)
+                                }
+
+                                "cancel", "cancelFialChecksumError" -> {
+                                    callback.onSuccess(false)
+                                    callback.onError(result)
+                                }
+                            }
+                        } else {
+                            Log.d(
+                                "firmwarePASOS",
+                                "No se pudo preparar el dispositivo para la actualizacion"
+                            )
+                            callback.onError("No se pudo preparar el modo actualizacion de flash")
+                        }
+                    }
+
+
+            } else {
+                error = true
+                textError = "Dispositivo desconectado"
+
+            }
+            return ""//if (isConnected?.name?.isNotEmpty() == true) "Conexión exitosa" else "Conexión fallida"
+        }
+
+        override fun onPreExecute() {
+            callback.onProgress("Iniciando")
+
+            Log.d("firmwarePASOS", "Iniciando")
+        }
+
+
+    }
+
 
     fun Updatefirmware(
         FWWW: String,
@@ -17065,7 +17320,7 @@ class ConexionTrefp(
     ) {
         var error = false
         var textError = ""
-        var divFirmware = dividirNewFirmware(FWWW.replace(" ",""))
+        var divFirmware = dividirNewFirmware(FWWW.replace(" ","").replace("\n", ""))
 
         val job = CoroutineScope(Dispatchers.IO).launch {
 
@@ -17148,6 +17403,10 @@ class ConexionTrefp(
                                 "listData ${getInfoList()} listData $listData"
                             )
                             val result = executeFirmwareUpdate()
+                            Log.d(
+                                "firmwarePASOS",
+                                " result = executeFirmwareUpdate()  $result"
+                            )
                             when (result) {
                                 "correct" -> {
                                     callback.onSuccess(true)
@@ -17172,7 +17431,7 @@ class ConexionTrefp(
             val corrutina3 = launch {
 
                 callback.onProgress("Finalizando")
-                Log.d("firmwarePASOS", "Finalizando error $error")
+
                 if (error) {
                     callback.onError(textError)
                     callback.onSuccess(false)
@@ -17624,10 +17883,7 @@ class ConexionTrefp(
             //  val listData = conexionTrefp.getInfoList()!!.trim().uppercase().replace(" ","") //     bluetoothLeService!!.listData.first().trim().uppercase().replace(" ","")//  conexionTrefp.getInfoList() //bluetoothLeService!!.getDataFromBroadcastUpdate() as MutableList<String>
 
 
-            listData = bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String?>
-
-                //getInfoList() as MutableList<String?>
-
+            listData =  bluetoothServices.bluetoothLeService?.listData as MutableList<String?>
             Log.d(
                 "firmwarePASOS",
                 "newListData $i ${listData.toString().trim().uppercase()}"
@@ -17648,10 +17904,6 @@ class ConexionTrefp(
                 delay(150)
 
                 val finalResponse =  bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String>
-                  //  bluetoothServices.bluetoothLeService!!.listData // conexionTrefp.getInfoList()
-
-
-                //  bluetoothLeService!!.getDataFromBroadcastUpdate() as MutableList<String>
                 val finalListResponse = GetRealDataFromHexaImbera.convert(
                     finalResponse as List<String>,
                     "Actualizar a Firmware Personalizado",
@@ -17660,18 +17912,14 @@ class ConexionTrefp(
                 ).toMutableList()
 
                 Log.d("firmwarePASOS","finalListResponse $finalListResponse")
-                return if (finalListResponse.isEmpty() || finalListResponse[0].trim()
-                        .replace(" ", "")
-                        .uppercase() != "F13D"
-                ) {
-                    "cancelFialChecksumError"
-                } else {
-                    "correct"
-                }
+                var datafin = if(finalListResponse.isNotEmpty()){finalListResponse[0].trim().uppercase().replace(" ","")} else{"error"}
+                Log.d("firmwarePASOS","datafin $datafin")
+                return if (datafin.equals("F13D")) "correct" else   "cancelFialChecksumError"
             }
+
             i++
         }
-        return "correct"
+        return "cancel"
     }
 
     suspend fun executeFirmwareUpdateSimple(callback: MyCallback): String {
