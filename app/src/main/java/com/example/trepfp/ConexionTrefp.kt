@@ -1446,7 +1446,7 @@ class ConexionTrefp(
     fun ObtenerLogger(callback: CallbackLogger) {
         Log.d("TAG", "ObtenerLogger:$bluetoothServices")
         bluetoothLeService = bluetoothServices.bluetoothLeService
-        val logger = getContext?.let { FragmentLogger(bluetoothServices, it, this@ConexionTrefp) }
+        val logger = getContext?.let { FragmentLogger(bluetoothServices, it, this@ConexionTrefp) }//
         logger!!.MyAsyncTaskPedirPLantilla(callback).execute()
     }
 
