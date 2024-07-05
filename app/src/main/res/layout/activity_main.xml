@@ -329,11 +329,11 @@
 
                     <Button
                             android:id="@+id/Room"
-                            android:layout_width="85dp"
-                            android:layout_height="35dp"
+                            android:layout_width="98dp"
+                            android:layout_height="55dp"
                             android:layout_marginTop="7dp"
                             android:layout_marginStart="7dp"
-                            android:text="Ro0om"
+                            android:text="Actualizar \n Firmware"
                             android:textSize="10dp"
                             app:layout_constraintHorizontal_bias="0.347"
                             app:layout_constraintStart_toStartOf="@+id/BTNOSENDHOUR"

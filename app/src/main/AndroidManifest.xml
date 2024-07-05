@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
             android:allowBackup="true"
@@ -30,6 +31,12 @@
             android:theme="@style/Theme.TrepfP"
             tools:targetApi="31">
         <activity
+                android:name=".TerminaleltecActivity"
+                android:exported="true"
+                android:theme="@style/Theme.TrepfP">
+
+        </activity>
+        <activity
                 android:name=".Principal"
                 android:exported="false"
                 android:label="@string/title_activity_principal" />
@@ -37,7 +44,7 @@
                 android:name=".MainActivity2"
                 android:configChanges="orientation|keyboardHidden"
                 android:exported="true"
-                android:screenOrientation="portrait"></activity>
+                android:screenOrientation="portrait" />
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|keyboardHidden"
@@ -53,7 +60,6 @@
         <service
                 android:name="mx.eltec.BluetoothServices.BluetoothLeService"
                 android:enabled="true" />
-
 
         <provider
                 android:name="androidx.core.content.FileProvider"

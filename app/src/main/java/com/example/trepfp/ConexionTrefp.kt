@@ -5,7 +5,6 @@ import BluetoothServices.ListenerInfoBle
 import Utility.*
 import Utility.GetHexFromRealDataImbera.calculateChacksumString
 import Utility.GetRealDataFromHexaOxxoDisplay.cleanSpace
-import Utility.GetRealDataFromHexaOxxoDisplay.hexToAsciiWifi
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -28,7 +27,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -40,7 +38,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.*
 import mx.eltec.BluetoothServices.BluetoothLeService
-import mx.eltec.imberatrefp.BuildConfig
 import mx.eltec.imberatrefp.R
 import java.lang.Long.toHexString
 import java.math.BigInteger
@@ -57,7 +54,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
-
+import androidx.lifecycle.lifecycleScope
 
 class ConexionTrefp(
     context: Context, tvconnectionState: TextView?,
@@ -723,6 +720,28 @@ class ConexionTrefp(
     }
 
 
+        fun LoggerLuis2(callback2: CallbackLoggerVersionCrudo) {
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.Default)  {
+                var listaInicialDatosTiempoOriginal: MutableList<String> = ArrayList()
+                var listaInicialDatosEventoOriginal: MutableList<String> = ArrayList()
+                var listaInicialDatosTiempoFiltrada: MutableList<String> = ArrayList()
+                var listaInicialDatosEventoFiltrada: MutableList<String> = ArrayList()
+                var listaFinalDatosTiempoAjustado: MutableList<String> = ArrayList()
+                var listaFinalDatosEventoAjustado: MutableList<String> = ArrayList()
+                var listaInicialDatosTiempoFiltradaErrores: MutableList<String> = ArrayList()
+                var listaInicialDatosEventosFiltradaErrores: MutableList<String> = ArrayList()
+                bluetoothLeService!!.clearListLogger()
+                listaInicialDatosTiempoOriginal.clear()
+
+                bluetoothLeService!!.sendFirstComando("4060") // Mandar comando a control de extracción de datos de tiempo
+                delay(13000) // Esperar la extracción del logger
+                bluetoothLeService!!.getLogeer()!!.toList()
+
+            }
+        }
+    }
+
     fun returnLlaveConecct(): Boolean {
         return BanderaLLave
     }
@@ -884,6 +903,153 @@ class ConexionTrefp(
             }
             delay(1000)
             return isConnected && !dataHND.isNullOrEmpty()
+        }
+
+
+    }
+         inner class ConnectSimple(
+        private val mac: String,
+        private val name: String,
+        private val callback: MyCallback
+
+    ) {
+        private var job: Job? = null
+        var finalProcess = false
+        var dataHND: MutableList<String>? = mutableListOf<String>()
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        fun execute() {
+            callback.onProgress("Iniciando")
+            job = CoroutineScope(Dispatchers.IO).launch {// CoroutineScope(Dispatchers.IO).launch {
+                connectToDevice()
+                callback.onProgress("Finalizando")
+            }
+        }
+
+        /*
+                private suspend fun connectToDevice() {
+
+                    callback.onProgress("Realizando")
+                    bluetoothLeService = bluetoothServices.bluetoothLeService
+
+
+                    var tryCount = 0
+                    do {
+        //              val isConnected = isConnected()
+                        val isConnected = nuewIsConnected()
+                        delay(1000)
+                      //  Log.d("mandarLlaveComunicacion", "isConnected $isConnected")
+                        if (isConnected) {
+                            var llave = pedirLlaveComunicacion()
+                            Log.d("funcioinToken","llave $llave ")
+                            if (!llave.equals("empty")) {
+                                var result = mandarLlaveComunicacion(llave!!.trim())
+                                Log.d("mandarLlaveComunicacion", "resultado $result")
+                            }
+                            delay(1000)
+                            callback.onSuccess(true)
+                        }
+                        else {
+                            tryCount++
+                            if (tryCount < 3) {
+                                // Intenta reconectar después de un breve tiempo
+                                delay(1000) // Simula un retraso antes de intentar la reconexión
+                                Log.d("pruebaconexion", "Intento de reconexión número $tryCount")
+                                // desconectar()
+                            } else {
+                                // Si ha intentado tres veces y no pudo conectar, desconecta
+                                callback.onError("No se pudo conectar")
+                                callback.onSuccess(false)
+                                delay(1000)
+                                desconectar()
+                            }
+                            delay(1000)
+                        }
+                        delay(1000)
+                    } while (!isConnected && tryCount < 3)
+                    delay(1000)
+                    callback.onProgress("Finalizando")
+
+                }
+        */
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private suspend fun connectToDevice() {
+            callback.onProgress("Realizando")
+            bluetoothLeService = bluetoothServices.bluetoothLeService
+            var tryCount = 0
+
+            val maxAttempts = 3
+            do {
+                val isConnected = nuewIsConnected()
+                if (isConnected) {
+                 /*   var llave = pedirLlaveComunicacion()
+                    if (!llave.equals("empty")) {
+                        var result = mandarLlaveComunicacion(llave!!.trim())
+
+                        BanderaLLave = true
+                        Log.d("MyAsyncTaskConnectBLE", "resultado $result  BanderaLLave = true")
+                    } else {
+                        BanderaLLave = false
+                        Log.d("MyAsyncTaskConnectBLE", "BanderaLLave = false")
+                    }
+                    callback.onSuccess(true)
+
+                    cancelExecution()*/
+                    callback.onSuccess(true)
+                    return // Salir del bucle si la conexión es exitosa
+                } else {
+                    /* tryCount++
+                     if (tryCount < maxAttempts) {
+                         delay(1000) // Esperar un segundo antes de intentar de nuevo
+                     } else {
+                         */
+                    // Si ha intentado el número máximo de veces y no se ha conectado, manejar el error
+                    cancelExecution()
+                    callback.onError("No se pudo conectar después de $maxAttempts intentos")
+                    callback.onSuccess(false)
+                    finalProcess = true
+
+
+                    desconectar()
+
+                    return // Salir del bucle
+                    //  }
+                }
+            } while (tryCount < maxAttempts)
+
+        }
+
+        fun cancelExecution() {
+            Log.d("", "job cancel connect")
+            job?.cancel()
+        }
+
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        private suspend fun nuewIsConnected(): Boolean {
+            bluetoothServices.connect(name, mac)
+            listaDevices!!.clear()
+            listaDevices?.add(BLEDevices(name, mac, null))
+            ListaD?.add(mac)
+            val maxAttempts = 3
+            var isConnected = false
+            var dataHND: List<String>? = null // Define dataHND fuera del bucle
+            clearLogger()
+            delay(5000)
+            for (attempt in 1..maxAttempts) {
+                delay(3000)
+                bluetoothLeService = bluetoothServices.bluetoothLeService
+                isConnected =
+                  true//  isBLEGattConnected() // sp?.getString("ACTION_GATT_CONNECTED", "") == "CONNECTED"
+
+                Log.d(
+                    "pruebaConexionLOg",
+                    "nuewIsConnected isConnected $isConnected attempt $attempt"
+                )
+
+
+            }
+            delay(1000)
+            return isConnected
         }
 
 
@@ -3252,7 +3418,8 @@ class ConexionTrefp(
                                             SALIDAEVENTOREGISTROS.add(0, "32")
                                             callback.getEvent(SALIDAEVENTOREGISTROS as MutableList<String>)
                                         }
-                                    } else {
+                                    }
+                                    else {
                                         Log.d("tipoble", "SALIDAEVENTOREGISTROS")
                                         Log.d(
                                             "tipoble",
@@ -4017,6 +4184,48 @@ class ConexionTrefp(
             }
         }
         return null
+    }
+
+
+    fun LoggerLuis(callback2: CallbackLoggerVersionCrudo) {
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.Default) {
+                bluetoothServices.bluetoothLeService!!.clearListLogger()
+                delay(800) // Suspende el hilo sin bloquearlo
+                bluetoothServices.bluetoothLeService?.listData?.clear()
+                bluetoothLeService?.sendComando("4061")
+                Thread.sleep(40000)
+                val ListaInicialEvento = bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String>
+                ListaInicialEvento.map {
+                    Log.d("LogListasINiciales", "Evento $it")
+                }
+
+                bluetoothServices.bluetoothLeService!!.clearListLogger()
+                delay(800) // Suspende el hilo sin bloquearlo
+                bluetoothServices.bluetoothLeService?.listData?.clear()
+                bluetoothLeService?.sendComando("4060")
+                Thread.sleep(18000)
+                val ListaInicialTiempo = bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String>
+                ListaInicialTiempo.map {
+                    Log.d("LogListasINiciales", "Tiempo $it")
+                }
+
+                Log.d(
+                    "LogListasINiciales",
+                    "///////////////////////////////////////////////////////////////////////\n///////////////////////////////////////////////////////////////////////"
+                )
+                ListaInicialEvento.map {
+                    Log.d("LogListasINiciales", "Evento $it")
+                }
+                Log.d(
+                    "LogListasINiciales",
+                    "///////////////////////////////////////////////////////////////////////\n///////////////////////////////////////////////////////////////////////"
+                )
+                ListaInicialTiempo.map {
+                    Log.d("LogListasINiciales", "Tiempo $it")
+                }
+            }
+        }
     }
 
 
@@ -16856,7 +17065,7 @@ class ConexionTrefp(
     ) {
         var error = false
         var textError = ""
-        var divFirmware = dividirNewFirmware(FWWW)
+        var divFirmware = dividirNewFirmware(FWWW.replace(" ",""))
 
         val job = CoroutineScope(Dispatchers.IO).launch {
 
@@ -16874,7 +17083,9 @@ class ConexionTrefp(
 
                 if (GetStatusBle()) {
                     if (divFirmware) {
-                        bluetoothServices.bluetoothLeService!!.CleanListLogger()
+                        bluetoothServices.bluetoothLeService!!.clearListLogger()
+                        delay(10) // Suspende el hilo sin bloquearlo
+                        bluetoothServices.bluetoothLeService?.listData?.clear()
                         delay(2000)
                         bluetoothServices.bluetoothLeService!!.sendComando("4046")
                         delay(800)
@@ -16901,14 +17112,16 @@ class ConexionTrefp(
                 callback.onProgress("Realizando")
                 Log.d(
                     "firmwarePASOS",
-                    "Realizando GetStatusBle  ${GetStatusBle()} divFirmware $divFirmware"
+                    "Realizando GetStatusBle  ${GetStatusBle()} divFirmware $divFirmware  listData $listData"
                 )
                 if (GetStatusBle()) {
                     if (divFirmware) {
                         if (containsPair(listData!!, "F1", "03")) {
                             Log.d("firmwarePASOS", "2251")
 
-                            bluetoothServices.bluetoothLeService!!.CleanListLogger()
+                            bluetoothServices.bluetoothLeService!!.clearListLogger()
+                            delay(800) // Suspende el hilo sin bloquearlo
+                            bluetoothServices.bluetoothLeService?.listData?.clear()
 
                             delay(200)
                             Log.d("firmwarePASOS", "Despues de limpiar")
@@ -17020,6 +17233,320 @@ class ConexionTrefp(
         }
     }
 
+    fun NewUpdatefirmware(
+        FWWW: String,
+        callback: MyCallback
+    ) {
+        var error = false
+        var textError = ""
+        var divFirmware = dividirNewFirmware(FWWW.replace(" ",""))
+
+        val job = CoroutineScope(Dispatchers.IO).launch {
+
+            val corrutina1 = launch {
+                callback.onProgress("Iniciando")
+                Log.d("firmwarePASOS", "Iniciando")
+
+                listData!!.clear()
+
+
+                Log.d(
+                    "firmwarePASOS",
+                    "firmware corrutina1 handshake listData $listData  infolist ${getInfoList()} "
+                )
+
+                if (GetStatusBle()) {
+                    if (divFirmware) {
+                        bluetoothServices.bluetoothLeService!!.CleanListLogger()
+                        delay(2000)
+                        bluetoothServices.bluetoothLeService!!.sendComando("4046")
+                        delay(800)
+                        listData = getInfoList() as MutableList<String?>
+                        Log.d(
+                            "firmwarePASOS",
+                            "firmware corrutina1 handshake listData $listData  infolist ${getInfoList()} "
+                        )
+                    } else {
+                        error = true
+                        textError = "Firmware incorrecto"
+                    }
+
+                } else {
+                    error = true
+                    textError = "Dispositivo desconectado"
+
+                }
+
+
+            }
+            corrutina1.join()
+            val corrutina2 = launch {
+                callback.onProgress("Realizando")
+                Log.d(
+                    "firmwarePASOS",
+                    "Realizando GetStatusBle  ${GetStatusBle()} divFirmware $divFirmware"
+                )
+                if (GetStatusBle()) {
+                    if (divFirmware) {
+                        if (containsPair(listData!!, "F1", "03")) {
+                            Log.d("firmwarePASOS", "2251")
+
+                            bluetoothServices.bluetoothLeService!!.CleanListLogger()
+
+                            delay(200)
+                            Log.d("firmwarePASOS", "Despues de limpiar")
+                            bluetoothServices.bluetoothLeService!!.sendFirstComando(
+                                "4049" + Integer.toHexString(
+                                    FinalFirmwareCommands.size
+                                ).padStart(4,'0')
+                            )
+                            Log.d(
+                                "firmwarePASOS",
+                                "se mando el comando 4049  ${
+                                    Integer.toHexString(
+                                        FinalFirmwareCommands.size
+                                    )
+                                }"
+                            )
+                            delay(1000)
+                            Log.d(
+                                "firmwarePASOS", "se espera 800"
+                            )
+                            listData = getInfoList() as MutableList<String?>
+                            Log.d(
+                                "firmwarePASOS",
+                                "listData ${getInfoList()} listData $listData"
+                            )
+                            val result = executeFirmwareUpdate()
+                            when (result) {
+                                "correct" -> {
+                                    callback.onSuccess(true)
+                                }
+
+                                "cancel", "cancelFialChecksumError" -> {
+                                    callback.onSuccess(false)
+                                    callback.onError(result)
+                                }
+                            }
+                        } else {
+                            Log.d(
+                                "firmwarePASOS",
+                                "No se pudo preparar el dispositivo para la actualizacion"
+                            )
+                            callback.onError("No se pudo preparar el modo actualizacion de flash")
+                        }
+                    }
+                }
+            }
+            corrutina2.join()
+            val corrutina3 = launch {
+
+                callback.onProgress("Finalizando")
+                Log.d("firmwarePASOS", "Finalizando error $error")
+                if (error) {
+                    callback.onError(textError)
+                    callback.onSuccess(false)
+                }
+            }
+            corrutina3.join()
+
+
+            /*  val corrutina1 = launch {
+
+                  listData?.clear()
+
+                  listData = conexionTrefp.getInfoList()
+
+                  bluetoothLeService!!.sendComando("4046")
+                  delay(500)
+                  listData = conexionTrefp.getInfoList()
+                  Log.d(
+                      "firmwarePASOS",
+                      "firmware corrutina1 handshake listData $listData  infolist ${conexionTrefp.getInfoList()} "
+                  )
+
+                  if (!listData!!.isNotEmpty()) {
+                      Log.d(
+                          "firmwarePASOS",
+                          "listData!!.isNotEmpty()")
+                  } else if (listData!!.first().trim().uppercase().replace(" ", "") == "F103") {
+                      Log.d(
+                          "firmwarePASOS", " valor  F103")
+                      dividirFirmware102(FWWW)
+                      delay(200)
+                      bluetoothLeService?.CleanListLogger()
+                      bluetoothLeService!!.sendComando(
+                          "4049" + Integer.toHexString(FinalFirmwareCommands.size),
+                          ""
+                      )
+                      delay(800)
+                      listData = conexionTrefp.getInfoList()
+                      delay(800)
+                      Log.d(
+                          "firmwarePASOS",
+                          "4049 listData $listData ")
+
+                      val updatedData = executeFirmwareUpdate()
+                      if (updatedData != "correct") callback.onError(updatedData) else callback.onSuccess(
+                          true
+                      )
+                  }
+                  callback.onProgress("Finalizando")
+                  Log.d(
+                      "firmwarePASOS",
+                      "Finalizando ")
+
+              }
+              */
+
+
+        }
+    }
+
+      fun UpdatefirmwareSimple(
+        FWWW: String,
+        callback: MyCallback
+    ) {
+        var error = false
+        var textError = ""
+        var divFirmware = dividirNewFirmware(FWWW.replace(" ",""))
+
+        val job = CoroutineScope(Dispatchers.IO).launch {
+
+            val corrutina1 = launch {
+                callback.onProgress("Iniciando")
+                Log.d("firmwarePASOS", "Iniciando")
+
+                listData!!.clear()
+
+
+                Log.d(
+                    "firmwarePASOS",
+                    "firmware corrutina1 handshake listData $listData  infolist ${getInfoList()} "
+                )
+
+
+
+
+                if (GetStatusBle()) {
+                    if (divFirmware) {
+                        bluetoothServices.bluetoothLeService!!.CleanListLogger()
+                        delay(2000)
+                        bluetoothServices.bluetoothLeService!!.sendComando("4047")
+                        delay(800)
+
+                    } else {
+                        error = true
+                        textError = "Firmware incorrecto"
+                    }
+
+                } else {
+                    error = true
+                    textError = "Dispositivo desconectado"
+
+                }
+
+
+            }
+            corrutina1.join()
+            val corrutina2 = launch {
+                callback.onProgress("Realizando")
+                Log.d(
+                    "firmwarePASOS",
+                    "Realizando GetStatusBle  ${GetStatusBle()} divFirmware $divFirmware"
+                )
+                if (GetStatusBle()) {
+                    if (divFirmware) {
+                        FinalFirmwareCommands.map {
+                            Log.d("FinalFirmwareCommands","$it")
+                        }
+                        val result = executeFirmwareUpdateSimple(callback)
+                        callback.onProgress("Se enviaron todos los paquetes con un tama;o de ${FinalFirmwareCommands.size}")
+                        delay(500)
+                        callback.onProgress("Finalizado")
+                        callback.onSuccess(true)
+                       /*
+                        when (result) {
+                            "correct" -> {
+                                callback.onSuccess(true)
+                            }
+
+                            "cancel", "cancelFialChecksumError" -> {
+                                callback.onSuccess(false)
+                                callback.onError(result)
+                            }
+                        }
+                        */
+                        /*
+                        if (containsPair(listData!!, "F1", "03")) {
+                            Log.d("firmwarePASOS", "2251")
+
+                            bluetoothServices.bluetoothLeService!!.CleanListLogger()
+
+                            delay(200)
+                            Log.d("firmwarePASOS", "Despues de limpiar")
+                            bluetoothServices.bluetoothLeService!!.sendFirstComando(
+                                "4049" + Integer.toHexString(
+                                    FinalFirmwareCommands.size
+                                )
+                            )
+                            Log.d(
+                                "firmwarePASOS",
+                                "se mando el comando 4049  ${
+                                    Integer.toHexString(
+                                        FinalFirmwareCommands.size
+                                    )
+                                }"
+                            )
+                            delay(1000)
+                            Log.d(
+                                "firmwarePASOS", "se espera 800"
+                            )
+                            listData = getInfoList() as MutableList<String?>
+                            Log.d(
+                                "firmwarePASOS",
+                                "listData ${getInfoList()} listData $listData"
+                            )
+                            val result = executeFirmwareUpdate()
+                            when (result) {
+                                "correct" -> {
+                                    callback.onSuccess(true)
+                                }
+
+                                "cancel", "cancelFialChecksumError" -> {
+                                    callback.onSuccess(false)
+                                    callback.onError(result)
+                                }
+                            }
+                        } else {
+                            Log.d(
+                                "firmwarePASOS",
+                                "No se pudo preparar el dispositivo para la actualizacion"
+                            )
+                            callback.onError("No se pudo preparar el modo actualizacion de flash")
+                        }
+
+                        */
+                    }
+                }
+            }
+            corrutina2.join()
+            val corrutina3 = launch {
+
+                callback.onProgress("Finalizando")
+                Log.d("firmwarePASOS", "Finalizando error $error")
+                if (error) {
+                    callback.onError(textError)
+                    callback.onSuccess(false)
+                }
+            }
+            corrutina3.join()
+
+
+
+        }
+    }
+
     fun dividirNewFirmware(command: String): Boolean {
         // Verificar que la longitud del comando sea suficiente para evitar IndexOutOfBoundsException
         if (command.length < 262) {
@@ -17085,33 +17612,45 @@ class ConexionTrefp(
     suspend fun executeFirmwareUpdate(): String {
         var i = 0
         while (i < FinalFirmwareCommands.size) {
-            bluetoothServices.bluetoothLeService!!.CleanListLogger()
+            bluetoothServices.bluetoothLeService!!.clearListLogger()
+
+            bluetoothServices.bluetoothLeService?.listData?.clear()
             bluetoothServices.bluetoothLeService!!.sendComando(
                 FinalFirmwareCommands[i],
                 ""
             )
-            delay(200)
+            delay(150)
 
             //  val listData = conexionTrefp.getInfoList()!!.trim().uppercase().replace(" ","") //     bluetoothLeService!!.listData.first().trim().uppercase().replace(" ","")//  conexionTrefp.getInfoList() //bluetoothLeService!!.getDataFromBroadcastUpdate() as MutableList<String>
 
-            listData = getInfoList() as MutableList<String?>
+
+            listData = bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String?>
+
+                //getInfoList() as MutableList<String?>
 
             Log.d(
-                "executeFirmwareUpdate",
+                "firmwarePASOS",
                 "newListData $i ${listData.toString().trim().uppercase()}"
             )
             if (!containsPair(listData!!, "F1", "3D")) {
+                Log.d(
+                    "firmwarePASOS",
+                    "cancel 17635 listData $listData")
                 return "cancel"
             }
 
             if (i + 1 == FinalFirmwareCommands.size) {
-                bluetoothServices.bluetoothLeService!!.CleanListLogger()
+                bluetoothServices.bluetoothLeService!!.clearListLogger()
+
+                bluetoothServices.bluetoothLeService?.listData?.clear()
                 val finalChecksum = Integer.toHexString(checksumTotal).padStart(8, '0')
                 bluetoothServices.bluetoothLeService!!.sendComando("404A$finalChecksum")
                 delay(150)
 
-                val finalResponse =
-                    bluetoothServices.bluetoothLeService!!.listData // conexionTrefp.getInfoList()
+                val finalResponse =  bluetoothServices.bluetoothLeService!!.getLogeer()!!.toList() as MutableList<String>
+                  //  bluetoothServices.bluetoothLeService!!.listData // conexionTrefp.getInfoList()
+
+
                 //  bluetoothLeService!!.getDataFromBroadcastUpdate() as MutableList<String>
                 val finalListResponse = GetRealDataFromHexaImbera.convert(
                     finalResponse as List<String>,
@@ -17120,6 +17659,7 @@ class ConexionTrefp(
                     sp!!.getString("modelo", "")!!
                 ).toMutableList()
 
+                Log.d("firmwarePASOS","finalListResponse $finalListResponse")
                 return if (finalListResponse.isEmpty() || finalListResponse[0].trim()
                         .replace(" ", "")
                         .uppercase() != "F13D"
@@ -17131,6 +17671,27 @@ class ConexionTrefp(
             }
             i++
         }
+        return "correct"
+    }
+
+    suspend fun executeFirmwareUpdateSimple(callback: MyCallback): String {
+        var i = 0
+        while (i < FinalFirmwareCommands.size) {
+
+            callback.onProgress("enviando paquete $i")
+            bluetoothServices.bluetoothLeService!!.clearListLogger()
+
+            bluetoothServices.bluetoothLeService?.listData?.clear()
+            bluetoothServices.bluetoothLeService!!.sendComando("4046${FinalFirmwareCommands[i]}"
+
+
+            )
+            delay(200)
+
+
+            i++
+        }
+
         return "correct"
     }
 }

@@ -13,6 +13,11 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-    <style name="Theme_AppCompat_Light_Dialog_Alert_eltc" parent="Theme.AppCompat.Light.Dialog.Alert">
+
+    <style name="Theme_AppCompat_Light_Dialog_Alert_eltc" parent="Theme.AppCompat.Light.Dialog.Alert"></style>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.TrepfP" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 </resources>
