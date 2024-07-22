@@ -40,8 +40,6 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.trepfp.databinding.TerminaleltecBinding
-import com.example.trepfp.ui.ConexionNewBle
-import com.example123.trepfp.ConexionTrefp
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
@@ -148,7 +146,7 @@ class TerminaleltecActivity : AppCompatActivity(),
                 return isWithinRange
             }
         }
-        private lateinit var conexionNewBle: ConexionNewBle
+
         private fun getVersionName(): String {
             try {
                 val pInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -1569,6 +1567,7 @@ class TerminaleltecActivity : AppCompatActivity(),
                 if (text!!.isNotEmpty()){
 
                     // conexionTrefp2.getInfoWifi(object : ConexionTrefp.MyCallback {
+                    /*
                     conexionTrefp2.UpdatefirmwareSimple(
                         text,
                         object : ConexionTrefp.MyCallback {
@@ -1643,6 +1642,7 @@ class TerminaleltecActivity : AppCompatActivity(),
                                 return progress
                             }
                         })
+                    */
                 }
                 // Aquí puedes manejar el contenido del archivo como desees, por ejemplo, mostrarlo en un TextView
                 ///   findViewById<TextView>(R.id.fileContentTextView).text = text ?: "Archivo vacío"

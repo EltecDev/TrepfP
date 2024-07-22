@@ -4,8 +4,6 @@ import Utility.BLEDevices
 import Utility.GetRealDataFromHexaOxxoDisplay
 
 import com.example.trepfp.ui.BluetoothLeServiceVersion
-import com.example.trepfp.ui.ConexionNewBle
-import com.example123.trepfp.ConexionTrefp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,7 +22,7 @@ import org.chromium.base.ThreadUtils.runOnUiThread
 import java.util.ArrayList
 
 class NewConnectionTrepf(private val context: Context) {
-    private lateinit var conexionNewBle: ConexionNewBle
+
     private var bluetoothLeService: BluetoothLeServiceVersion? = null
     private var job: Job? = null
 
@@ -49,7 +47,7 @@ class NewConnectionTrepf(private val context: Context) {
         private suspend fun connectToDevice() {
             callback.onProgress("Realizando")
             withContext(Dispatchers.Main) {
-                conexionNewBle = ConexionNewBle(context, mac)
+
             }
 
             val maxAttempts = 20
@@ -115,7 +113,7 @@ class NewConnectionTrepf(private val context: Context) {
 
 
             // Envía el comando "4070"
-            sendComando("4070")
+        //    sendComando("4070")
 
             // Escucha la respuesta del comando
             getWriteResponseLiveData().observe(context as LifecycleOwner, Observer { data ->

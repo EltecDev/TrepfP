@@ -341,6 +341,17 @@
                             app:layout_constraintEnd_toEndOf="@+id/BTNOSENDHOUR"
 
                             />
+                    <EditText
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/TextPaquetes"
+                            android:hint="Cantidad de paquetes"
+                            android:textSize="16sp"
+                            app:layout_constraintTop_toTopOf="@id/Room"
+                            app:layout_constraintEnd_toStartOf="@id/Room"
+                            app:layout_constraintBottom_toBottomOf="@id/Room"
+                            android:layout_marginEnd="50dp"
+                            />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
