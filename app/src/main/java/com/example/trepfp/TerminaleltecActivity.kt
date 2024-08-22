@@ -147,7 +147,7 @@ class TerminaleltecActivity : AppCompatActivity(),
             }
         }
 
-        private fun getVersionName(): String {
+        private fun getVersionName(): String? {
             try {
                 val pInfo: PackageInfo = packageManager.getPackageInfo(packageName, 0)
                 return pInfo.versionName

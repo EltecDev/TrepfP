@@ -6,8 +6,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import com.example.termometro_create.TermometroJhr
+import com.example.trepfp.TermometroJhr
+//import com.example.termometro_create.TermometroJhr
 import com.example.trepfp.databinding.ActivityMain2Binding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -20,8 +25,24 @@ class MainActivity2 : AppCompatActivity() {
 
         TermoCMO = binding.termometro
         binding.button.setOnClickListener {
+          /*  val job = CoroutineScope(Dispatchers.Main).launch {
+                val corrutina1 = launch {
+                    for (i in 0..100) {
+                        TermoCMO?.tempMax(100F)
+                        TermoCMO?.tempMin(0F)
+                        TermoCMO?.timeAnimation = 1F
+                        var t = i //temp.toInt()
+                        Log.d("asdfghj","temperatura $t ${t.toFloat()}")
+                        TermoCMO?.tempSet(t.toFloat())
+
+                        //   TermoCmo(binding.textView3.text.toString())
+                        delay(2000)
+                    }
+                }
+            }
+            */
             TermoCmo(binding.textView3.text.toString())
-            var check = if(binding.SwitchVaciado.isChecked) "0" else "1"
+            var check = if(binding.SwitchVaciado.isChecked) "1" else "0" // "0" else "1"
             modificarCardview( binding.textView3.text.toString().toInt(), binding.textViewCC.text.toString().toInt()  ,binding.llenado.text.toString().toInt() , 96,check)
         }
 
@@ -34,19 +55,27 @@ class MainActivity2 : AppCompatActivity() {
 
         TermoCMO?.tempMax(100F)
         TermoCMO?.tempMin(0F)
-        TermoCMO?.timeAnimation = 1000F
-        TermoCMO?.tempSet(temp.toFloat())
+        TermoCMO?.timeAnimation = 1F
+        var t = temp.toInt()
+        Log.d("asdfghj","temperatura $t ${t.toFloat()}")
+        TermoCMO?.tempSet(t.toFloat())
 
     }
-    fun modificarCardview(poscionCB1 : Int, poscionCC1 : Int, NivelDeLLenado : Int, A1 : Int , CD : String){
+    fun modificarCardview(poscionCB1 : Int, poscionCC1 : Int, NivelDeLLenado : Int, A1 : Int , check : String ){
 
+        Log.d("ObtenerStatus"," iniciando modificarCardview")
         var ValorA1 = NivelDeLLenado //300
 
         val cardView =  binding.cardviewA1
         val cardviewTextos = binding.cardviewTextos
 
-        var CD =    CD
+        var CD =   check /*GetRealDataFromHexaOxxoDisplay.getDecimal(
+        "00"//    ClaseEstructura.returnDato("CD")
+        ).toString()*/
 
+        var CA =  "66" //  GetRealDataFromHexaOxxoDisplay.getDecimal(
+         //   ClaseEstructura.returnDato("CA")
+        //  ).toString()
         var aluraCardview =  cardView.height
         var poscionCB =(poscionCB1 * aluraCardview) / 100 // poscionCB1*2
         var poscionCC =(poscionCC1 * aluraCardview) / 100 // poscionCC1*2
@@ -58,12 +87,26 @@ class MainActivity2 : AppCompatActivity() {
         val linearLayoutCC = binding.linearLayoutCC
         val linearLayoutDif = binding.linearLayoutDif
         Log.d(
-            "debug---","---------------------------------------------> CD $CD    cardView ${cardView.height} NivelDeLLenado $NivelDeLLenado A1 $A1 NivelllenadoActual $NivelllenadoActual ")
+            "debug---","---------------------------------------------> CD $CD    cardView ${cardView.height} NivelDeLLenado $NivelDeLLenado A1 $A1 NivelllenadoActual $NivelllenadoActual  CA $CA ")
+
+
+
+
+
+        /*
+            alarmas_RT [0] = Bandera del sensor on/off: Bandera que se activa cuando hay una alarma cuando el parámetro CA es igual a 0
+            alarmas_RT [1] = Bandera de nivel, lógica de vaciado: Bandera que se activa cuando hay una alarma con los parámetros : CA = 0x66; CD = 1, en el display se despliega el mensaje AU
+            alarmas_RT [2] = Bandera de nivel, lógica de llenado: Bandera que se activa cuando hay una alarma con los parámetros : CA = 0x66; CD = 0, en el display se despliega el mensaje AL
+            alarmas_RT [3] = Bandera de colocación incorrecta de sensor: Esta bandera se activa cuando el sensor envía una señal especifica y se traduce como una señal invalida, en el display se despliega el mensaje F1, parámetro CA = 0x66
+            alarmas_RT [4] = Bandera sensor inhabilitado: Esta bandera se activa cuando no se encuentra un sensor colocado en el funcionamiento de medición de distancia, en el display se despliega el mensaje F0, parámetro CA = 0x66
+
+        * */
+
 
         binding.TextoA1.text = "Altura máxima a medir: $A1"
 //        if (porcentLLenado )
 
-        if (CD == "0" /*direccionCD*/)
+        if (CD ==  "0" /*direccionCD*/)
         {
             binding.imgArrowUp.isVisible  = true
             binding.imgArrowDown.isVisible  = false
@@ -88,7 +131,7 @@ class MainActivity2 : AppCompatActivity() {
                     "\n poscionCB $poscionCB  nivel de llenado $NivelllenadoActual")
 //        // Cambia el margen inferior del LinearLayout según el desplazamiento deseado
         val layoutParamsCB = linearLayoutCB.layoutParams as ConstraintLayout.LayoutParams
-        layoutParamsCB.bottomMargin = desplazamientoVerticalEnPixelesCB  - 5
+        layoutParamsCB.bottomMargin = desplazamientoVerticalEnPixelesCB // - 5
         linearLayoutCB.layoutParams = layoutParamsCB
 
 //        val DeltatoAlarma =    if (CD == "1") {
@@ -98,9 +141,9 @@ class MainActivity2 : AppCompatActivity() {
 
         Log.d("ValoresdELTA","desplazamientoVerticalEnPixelesCB $desplazamientoVerticalEnPixelesCB  \n  desplazamientoVerticalEnPixelesCC $desplazamientoVerticalEnPixelesCC")
         val DeltatoAlarma =    if (CD == "1") {
-            desplazamientoVerticalEnPixelesCB + desplazamientoVerticalEnPixelesCC  - 5
+            desplazamientoVerticalEnPixelesCB + desplazamientoVerticalEnPixelesCC
         }
-        else desplazamientoVerticalEnPixelesCB - desplazamientoVerticalEnPixelesCC  - 5
+        else desplazamientoVerticalEnPixelesCB - desplazamientoVerticalEnPixelesCC  //- 5
 
 
         val layoutParamsCC = linearLayoutCC.layoutParams as ConstraintLayout.LayoutParams
@@ -109,7 +152,7 @@ class MainActivity2 : AppCompatActivity() {
 
 //        ////////////////////////////////////////////////Textos
         val layoutParamsCBTextos = linearLayoutCBTextos.layoutParams as ConstraintLayout.LayoutParams
-        layoutParamsCBTextos.bottomMargin = desplazamientoVerticalEnPixelesCB  - 10
+        layoutParamsCBTextos.bottomMargin = desplazamientoVerticalEnPixelesCB // - 10
         linearLayoutCBTextos.layoutParams = layoutParamsCBTextos
 
         val layoutParamsCCTextos = linearLayoutCCTextos.layoutParams as ConstraintLayout.LayoutParams
@@ -132,12 +175,20 @@ class MainActivity2 : AppCompatActivity() {
 
 
         val layoutParamsDIFTextos = linearLayoutDifTextos.layoutParams as ConstraintLayout.LayoutParams
-        layoutParamsDIFTextos.height = NivelllenadoActual - 5 // Cambia según sea necesario
+        layoutParamsDIFTextos.height = NivelllenadoActual  //- 5 // Cambia según sea necesario
 //        layoutParamsDIFTextos.bottomMargin =
 //       NivelllenadoActual   -5 //- 100// Establece un margen negativo para que se extienda hasta el fondo
         linearLayoutDifTextos.layoutParams = layoutParamsDIFTextos
         cardviewTextos.isVisible = true
         cardView.isVisible = true
+
+        ////////////////EN ESTA PARTE SE CAMBIA EL COLOR DEL LIQUIDO DEL TANQUE
+        Log.d("DEBUGCAMBIODECOLOR","CD $CD NivelDeLLenado $NivelDeLLenado NivelllenadoActual " +
+                "$NivelllenadoActual desplazamientoVerticalEnPixelesCB $desplazamientoVerticalEnPixelesCB desplazamientoVerticalEnPixelesCC $desplazamientoVerticalEnPixelesCC" +
+                " poscionCC1 $poscionCC1 poscionCB1 $poscionCB1 ")
+
+
+
 
         if (CD == "0"){
 

@@ -453,6 +453,98 @@
 
 
                 </LinearLayout>
+                <Button
+                        android:id="@+id/BTNEstaus"
+                        android:layout_width="85dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginStart="7dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="Estatus"
+                        android:textSize="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/BTNGETTIME"
+                        app:layout_constraintTop_toBottomOf="@+id/BTNOSENDGEO" />
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+
+                    >
+
+                <Button
+                        android:id="@+id/BTNUNIX"
+                        android:layout_width="85dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginStart="7dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="UNIX"
+                        android:textSize="10dp"
+                        />
+                <Button
+                        android:id="@+id/BTNBCD"
+                        android:layout_width="85dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="17dp"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="BCD"
+                        android:textSize="10dp"
+                        />
+
+            </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                        android:visibility="gone"
+                        >
+
+                    <EditText
+                            android:id="@+id/comandText"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:hint="comando"
+                            android:layout_marginStart="10dp"
+                            android:paddingEnd="20dp"
+                            android:text=""
+
+                            />
+                    <EditText
+                            android:id="@+id/iteracionText"
+                            android:layout_width="40dp"
+                            android:layout_height="wrap_content"
+                            android:hint="iT"
+                            android:layout_marginStart="10dp"
+                            android:paddingEnd="20dp"
+                            android:text="1"
+                            />
+                    <EditText
+                            android:id="@+id/miliText"
+                            android:layout_width="70dp"
+                            android:layout_height="wrap_content"
+                            android:hint="MIl"
+                            android:layout_marginStart="10dp"
+                            android:paddingEnd="20dp"
+                            android:text="800"
+                            />
+
+                    <Button
+                            android:id="@+id/NEWStatus"
+                            android:layout_width="85dp"
+                            android:layout_height="35dp"
+                            android:layout_marginTop="17dp"
+                            android:layout_marginStart="7dp"
+                            android:layout_marginBottom="10dp"
+                            android:text="NEWStatus"
+                            android:textSize="10dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/BTNGETTIME"
+                            app:layout_constraintTop_toBottomOf="@+id/BTNOSENDGEO" />
+                </LinearLayout>
             </LinearLayout>
 
         </ScrollView>

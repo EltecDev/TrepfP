@@ -114,27 +114,28 @@
             <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     >
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
-(/// 
-                    <com.example.termometro_create.TermometroJhr
+
+                    <com.example.trepfp.TermometroJhr
                             android:id="@+id/termometro"
                             android:layout_width="235dp"
                             android:layout_height="272dp"
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
-                            app:colorTemperatura="#EB0008"
+                            app:colorTemperatura="#2196F3"
                             app:colorTermometro="#000003"
-                            app:offsetX="-35"
-                            app:offsetY="-10"
-                            app:textColorTemp="#3D5AFE"
-                            app:textSizeTemp="30"
+                            app:offsetX="-40"
+                            app:offsetY="-20"
+                            app:textColorTemp="#E91E63"
+                            app:textSizeTemp="40"
+
                             android:layout_gravity="center"
-                            app:textTemp=" C"
+                            app:textTemp=" °C"
                             app:textOn="true"/>
 
                 </LinearLayout>
@@ -143,7 +144,7 @@
             <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     >
 
 
@@ -336,7 +337,7 @@
                                                 android:layout_marginStart="0dp"
                                                 android:layout_marginEnd="2dp"
 
-                                                app:tint="@color/rojoOxxo" />
+                                                app:tint="#4CAF50" />
 
                                         <TextView
                                                 android:id="@+id/TextoLayoutCC"
@@ -378,7 +379,7 @@
                                                 android:layout_marginStart="0dp"
                                                 android:layout_marginEnd="2dp"
 
-                                                app:tint="@color/rojoOxxo" />
+                                                app:tint="#03A9F4" />
 
                                         <TextView
                                                 android:id="@+id/TextoLayoutDif"

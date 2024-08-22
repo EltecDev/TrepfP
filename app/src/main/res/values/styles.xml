@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
+    <declare-styleable name="termometroJhr">
+        <attr name="colorTermometro" format="color" />
+        <attr name="colorTemperatura" format="color" />
+        <attr name="textTemp" format="string" />
+        <attr name="offsetX" format="float" />
+        <attr name="offsetY" format="float" />
+        <attr name="textSizeTemp" format="float" />
+        <attr name="textColorTemp" format="color" />
+        <attr name="textOn" format="boolean" />
+    </declare-styleable>
+
+</resources>

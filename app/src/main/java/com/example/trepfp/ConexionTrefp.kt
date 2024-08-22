@@ -55,6 +55,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
 import androidx.lifecycle.lifecycleScope
+import java.time.LocalDate
 
 class ConexionTrefp(
     context: Context, tvconnectionState: TextView?,
@@ -719,7 +720,7 @@ class ConexionTrefp(
          */
     }
 
-
+/*
         fun LoggerLuis2(callback2: CallbackLoggerVersionCrudo) {
         CoroutineScope(Dispatchers.Main).launch {
             withContext(Dispatchers.Default)  {
@@ -741,7 +742,7 @@ class ConexionTrefp(
             }
         }
     }
-
+*/
     fun returnLlaveConecct(): Boolean {
         return BanderaLLave
     }
@@ -11313,7 +11314,7 @@ class ConexionTrefp(
                 }
                 Log.d("DebugdelaHora", "FW $FW  HW $HW ")
                 mensaje = when (name) {
-                    "IMBERA-HEALTH" -> {
+                    "IMBERA-HEALTH", "IMBERA-CTOF" -> {
                         Log.d("DebugdelaHora", "Control IMBERA-HEALTH ")
                         var statusBCD = actualizarHoraBCD()
                         Log.d("actualizarHoraBCD", "actualizarHoraBCD result  $statusBCD")
@@ -16756,6 +16757,10 @@ class ConexionTrefp(
             val minutos = String.format("%02d", calendar.get(Calendar.MINUTE))
             val segundos = String.format("%02d", calendar.get(Calendar.SECOND))
 
+            val currentDate = LocalDate.now()
+            val dayOfWeek = currentDate.dayOfWeek.value
+            val formattedDay = String.format("%02d", dayOfWeek)
+
             Log.d("actualizarHoraBCD", " horas $horas minutos $minutos  segundos $segundos")
             var mestime = calendar.get(Calendar.MONTH) + 1
             val anotime: String = calendar.toString().substring(calendar.toString().length - 4)
@@ -16775,7 +16780,7 @@ class ConexionTrefp(
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD $horas horas")
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD $minutos minutos")
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD $segundos segundos")
-            Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD diasemana:$dia dia")
+            Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD diasemana:$formattedDay formattedDay ")
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD diaNum:$diaNum diaNum")
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD mes:$mes mes")
             Log.d("actualizarHoraBCD", "currentTimeHexNOW_BCD ano:$ano1 ano1")
@@ -16792,15 +16797,18 @@ class ConexionTrefp(
             } else {
                 val stringBuilder = java.lang.StringBuilder()
                 stringBuilder.append("405C")
-                stringBuilder.append(ano2.toUpperCase())
+
+//                stringBuilder.append("231224233758070020")
+               stringBuilder.append(ano2.toUpperCase())
                 stringBuilder.append(mes.toUpperCase())
                 stringBuilder.append(diaNum.toUpperCase())
                 stringBuilder.append(horas.toUpperCase())
                 stringBuilder.append(minutos.toUpperCase())
                 stringBuilder.append(segundos.toUpperCase())
-                stringBuilder.append(dia.toUpperCase())
+                stringBuilder.append(formattedDay.padStart(2,'0')) //   dia.toUpperCase())
                 stringBuilder.append("00")
                 stringBuilder.append(ano1.toUpperCase())
+
                 stringBuilder.append(
                     calculateChacksumString(stringBuilder.toString())
                         .toUpperCase()
@@ -16845,7 +16853,7 @@ class ConexionTrefp(
                 Log.d("COMANDO enviado", "Año 2: $anio2")
                 Log.d("COMANDO enviado", "Checksum: $checksum")
 
-                Thread.sleep(800)
+                Thread.sleep(1000)
 
                 listData = getInfoList() as List<String>
                 Log.d("COMANDO enviado", "listData $listData")
@@ -16861,6 +16869,7 @@ class ConexionTrefp(
                 }
             }
         } catch (e: InterruptedException) {
+            Log.d("actualizarHoraBCD","error $e")
             e.printStackTrace()
             return false
         }
@@ -17051,7 +17060,7 @@ class ConexionTrefp(
         try {
 
             val pInfo: PackageInfo = this.packageManager.getPackageInfo(this.packageName, 0)
-            return pInfo.versionName
+            return pInfo.versionName!!
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
@@ -17403,7 +17412,7 @@ class ConexionTrefp(
         }
     }
 
-    inner class MyAsyncTaskUpdateFIrmware123(private val  FWWW: String, private val CantidadPaq : Int,  private val callback: MyCallback) :
+    inner class MyAsyncTaskUpdateFIrmwareNewVersion(private val  FWWW: String, private val CantidadPaq : Int,  private val callback: MyCallback) :
         AsyncTask<Int?, Int?, String?>() {
         var error = false
         var textError = ""
