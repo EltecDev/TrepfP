@@ -17412,13 +17412,13 @@ class ConexionTrefp(
         }
     }
 
-    inner class MyAsyncTaskUpdateFIrmwareNewVersion(private val  FWWW: String, private val CantidadPaq : Int,  private val callback: MyCallback) :
+    inner class MyAsyncTaskUpdateFIrmwareNewVersion(private val  FWWW: String, /*private val CantidadPaq : Int, */ private val callback: MyCallback) :
         AsyncTask<Int?, Int?, String?>() {
         var error = false
         var textError = ""
         var divFirmware = dividirNewFirmware(FWWW.replace(" ",""))
         var resultadoPaquetes = ""
-        var tamPaquete = CantidadPaq // 240
+        var tamPaquete = FWWW.replace(" ","").length/256 // CantidadPaq // 240
         override fun doInBackground(vararg params: Int?): String? {
 
             FinalFirmwareCommands.map {
@@ -17438,7 +17438,7 @@ class ConexionTrefp(
                     listData.add(bluetoothLeService!!.dataFromBroadcastUpdateString)
                     Log.d(
                         "firmwarePASOS",
-                        "firmware Valor del hanshake  listData $listData "
+                        "firmware Valor del hanshake  listData $listData  ${FWWW.replace(" ","").length/256} "
                     )
                     /////////////////////////////////////////////////////////////////////////////////
 
@@ -17512,7 +17512,7 @@ class ConexionTrefp(
             if (finalListResponse[0].uppercase().equals("F103"))
             {
                 val PaddedFirmwareCommands = adjustFirmwareCommands(FinalFirmwareCommands ,tamPaquete)
-                Thread.sleep(500)
+                Thread.sleep(200)
                 FinalFirmwareCommands.clear()
                 Thread.sleep(100)
                 FinalFirmwareCommands = PaddedFirmwareCommands
@@ -17521,11 +17521,16 @@ class ConexionTrefp(
                     "Valida el resultado de 4046 el resultado es F103 ${FinalFirmwareCommands.size}"
                 )
                 clearLogger()
-                var tamBytestoSend = when(tamPaquete){
-                    240 -> 2
+                var tamBytestoSend = when{
+                    /*240 -> 2
                     384 -> 4
                     else -> 4
+                    */
+                    (tamPaquete <= 255) -> 2
+                    (tamPaquete >= 256) -> 4
+                    else -> 4
                 }
+
                 bluetoothServices.bluetoothLeService!!.sendFirstComando(
                     "4049" + Integer.toHexString(
                         FinalFirmwareCommands.size
@@ -17538,7 +17543,7 @@ class ConexionTrefp(
                     ).padStart(tamBytestoSend,'0')}"
                 )
 
-                Thread.sleep((1000))
+                Thread.sleep((200))
                 listData.clear()
                 listData.add(bluetoothLeService!!.dataFromBroadcastUpdateString)
                 Log.d(
@@ -17592,7 +17597,7 @@ class ConexionTrefp(
                     if (EnvioDatos.isNotEmpty()){
                         if (!EnvioDatos.first().trim().uppercase().equals("F13D"))
                         {
-                            Thread.sleep(800)
+                            Thread.sleep(200)
                             listData.clear()
                             listData.add(bluetoothLeService!!.dataFromBroadcastUpdateString)
                             val EnvioDatos: MutableList<String> = GetRealDataFromHexaImbera.convert(
